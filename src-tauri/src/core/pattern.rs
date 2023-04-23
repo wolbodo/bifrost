@@ -1,8 +1,7 @@
 use erased_serde::serialize_trait_object;
 use serde::{Deserialize, Serialize};
-use crate::stage;
 
-
+use crate::core::stage;
 
 pub trait Pattern: Send + Sync + erased_serde::Serialize {
   fn tick(&mut self, stage: &mut stage::Stage) -> ();

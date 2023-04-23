@@ -6,10 +6,10 @@ use serde::Serialize;
 use serde_json::Value;
 use tauri::async_runtime::Mutex;
 
-use crate::pattern::{self, Pattern};
-use crate::pattern::PatternOption;
-use crate::stage::Stage;
-use crate::sequence::Sequence;
+use crate::core::pattern::{self, Pattern};
+use crate::core::pattern::PatternOption;
+use crate::core::stage::Stage;
+use crate::core::sequence::Sequence;
 
 // the payload type must implement `Serialize` and `Clone`.
 #[derive(Clone, serde::Serialize)]

@@ -1,8 +1,8 @@
 use serde::Serialize;
 // use serde_traitobject::{Arc, Serialize};
 
-use crate::stage::Stage;
-use crate::pattern::Pattern;
+use crate::core::stage::Stage;
+use crate::core::pattern::Pattern;
 
 #[derive(Serialize)]
 pub struct Sequence {
