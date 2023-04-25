@@ -41,13 +41,25 @@
 </script>
 
 {#if pattern}
-  {#if isSolidPattern(pattern)}
-    <Solid data={pattern} on:change={apply} />
-  {:else if isFadePattern(pattern)}
-    <Fade data={pattern} on:change={apply} />
-  {:else if isBlinkPattern(pattern)}
-    <Blink data={pattern} on:change={apply} />
-  {:else}
-    <p>Unknown pattern</p>
-  {/if}
+  <section>
+
+    {#if isSolidPattern(pattern)}
+      <Solid data={pattern} on:change={apply} />
+      {:else if isFadePattern(pattern)}
+      <Fade data={pattern} on:change={apply} />
+      {:else if isBlinkPattern(pattern)}
+      <Blink data={pattern} on:change={apply} />
+      {:else}
+      <p>Unknown pattern</p>
+    {/if}
+    
+    <button on:click={() => invoke('delete_pattern', { index: $selected })}>Delete</button>
+  </section>
 {/if}
+
+
+<style>
+  section {
+    grid-area: pattern;
+  }
+</style>

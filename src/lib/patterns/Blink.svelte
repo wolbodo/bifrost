@@ -25,34 +25,29 @@
   }   
 </script>
 
-<section>
-  <h2>{data.name}</h2>
-  <input
-    type='color'
-    style:--color={color}
-    value={color}
-    on:change={(e) => onChange({ color: Color(e.target.value).rgb().array() })}
-  />
-  <input
-    type='range'
-    min='1'
-    max='100'
-    value={data.on_duration}
-    on:change={(e) => onChange({ on_duration: Number(e.target.value) })}
-  />
-  <input
-    type='range'
-    min='1'
-    max='100'
-    value={data.off_duration}
-    on:change={(e) => onChange({ off_duration: Number(e.target.value) })}
-  />
-</section>
+<h2>{data.name}</h2>
+<input
+  type='color'
+  style:--color={color}
+  value={color}
+  on:change={(e) => onChange({ color: Color(e.target.value).rgb().array() })}
+/>
+<input
+  type='range'
+  min='1'
+  max='100'
+  value={data.on_duration}
+  on:change={(e) => onChange({ on_duration: Number(e.target.value) })}
+/>
+<input
+  type='range'
+  min='1'
+  max='100'
+  value={data.off_duration}
+  on:change={(e) => onChange({ off_duration: Number(e.target.value) })}
+/>
 
 <style>
-  section {
-    grid-area: pattern;
-  }
   input {
     background: var(--color);
 

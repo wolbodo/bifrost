@@ -39,6 +39,9 @@ impl Sequence {
     self.patterns[index] = pattern;
   }
   pub fn delete_pattern(&mut self, index: usize) {
+    if (index < self.current) {
+      self.current -= 1;
+    }
     self.patterns.remove(index);
   }
   pub fn tick(&mut self, stage: &mut Stage) {
@@ -52,6 +55,10 @@ impl Sequence {
       }
       self.patterns[self.current].tick(stage);
       self.time -= 1;
+    } else {
+      for i in 0..stage.size {
+        stage.set(i, [0,0,0]);
+      }
     }
   }
 }

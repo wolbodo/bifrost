@@ -63,7 +63,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  color: var(--secondary-2);
+  color: var(--primary-4);
   background-color: var(--secondary-1);
   transition: border-color 0.25s;
   box-shadow: 0 2px 2px var(--secondary-4);

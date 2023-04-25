@@ -27,7 +27,6 @@
   }   
 </script>
 
-<section>
   <h2>{data.name}</h2>
   <input
     type='color'
@@ -35,12 +34,8 @@
     value={color}
     on:change={onChange}
   />
-</section>
 
 <style>
-  section {
-    grid-area: pattern;
-  }
   input {
     background: var(--color);
 

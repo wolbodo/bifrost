@@ -19,6 +19,8 @@
     invoke("add_pattern", { pattern: formatPattern(pattern) })
   }
 
+  const randomColor = () => [0, 0, 0].map(() => Math.floor(Math.random() * 255))
+
   const onChange = (e) => {
     const name: string = e.target.value;
     const reset = e.target.value = e.target.options[0].value
@@ -28,19 +30,19 @@
     if (name === 'solid') {
       addPattern({
         name,
-        color: [255, 255, 255],
+        color: randomColor(),
       } as Solid)
     } else if (name === 'blink') {
       addPattern({
         name,
-        color: [255, 255, 255],
+        color: randomColor(),
         on_duration: 10,
         off_duration: 10,
       } as Blink)
     } else if (name === 'fade') {
       addPattern({
         name,
-        color: [255, 255, 255],
+        color: randomColor(),
         duration: 500,
       } as Fade)
     } else {
