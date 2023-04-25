@@ -68,5 +68,8 @@
 <style>
   section {
     grid-area: pattern;
+
+    display: grid;
+    
   }
 </style>

@@ -4,6 +4,8 @@ use tauri::App;
 use std::{time::Duration, sync::{Arc}};
 use tauri::{Manager, async_runtime::Mutex, Window, };
 use tokio;
+use std::net::{IpAddr, SocketAddr};
+use sacn::source::SacnSource;
 
 use crate::core::{engine, patterns, stage};
 
@@ -25,11 +27,14 @@ fn init_engine(handle: tauri::AppHandle, window: Window, engine: tauri::State<Ar
             tauri::async_runtime::spawn(async move {
                 let mut interval = tokio::time::interval(   Duration::from_millis(20));
                 let engine_mutex = handle.state::<Arc<Mutex<engine::Engine>>>();
+                let src_mutex = handle.state::<Arc<Mutex<SacnSource>>>();
                 
                 loop {
                     {
                         let mut engine: tokio::sync::MutexGuard<engine::Engine> = engine_mutex.lock().await;
                         engine.tick();
+                        let mut src = src_mutex.lock().await;
+                        engine.send_sacn(&mut src);
                         window.emit("tick", serde_json::to_value(engine.clone()).unwrap()).unwrap();
                     }
         
@@ -65,9 +70,16 @@ impl AppBuilder {
   pub fn run(self) {
     let engine = engine::Engine::new(stage::Stage::new(12));
 
+    // setup plugin specific state here
+    let local_addr: SocketAddr = SocketAddr::new(IpAddr::V4("0.0.0.0".parse().unwrap()), 8000);
+    let mut src =  SacnSource::with_ip("Wolbodo Lights", local_addr).unwrap();
+    src.register_universe(1).unwrap(); // Register with the source that will be sending on the given universe.
+
+    
     let setup = self.setup;
     tauri::Builder::default()
       .manage(Arc::new(Mutex::new(engine)))
+      .manage(Arc::new(Mutex::new(src)))
       .invoke_handler(tauri::generate_handler![
           init_engine,
           engine::add_pattern,

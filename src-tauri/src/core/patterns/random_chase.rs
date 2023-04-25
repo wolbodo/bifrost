@@ -18,7 +18,7 @@ impl State {
   pub fn new() -> State {
     let mut rng = rand::thread_rng();
     State {
-      hue: rng.gen_range(0..=360),
+      hue: rng.gen_range(0..=20),
       chase: vec![],
       step: 0,
       time: 0,

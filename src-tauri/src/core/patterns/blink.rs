@@ -60,7 +60,7 @@ impl Show for Blink {
     for i in 0..stage.size {
       stage.set(i, match state.state {
         true => self.color,
-        false => Color::Black,
+        false => Color::BLACK,
       })
     }
     self.state = Some(state);

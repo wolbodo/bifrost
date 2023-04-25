@@ -6,6 +6,8 @@ use serde::Serialize;
 use serde_json::Value;
 use tauri::async_runtime::Mutex;
 
+use sacn::source::SacnSource;
+
 use crate::core::patterns::Pattern;
 use crate::core::stage::Stage;
 use crate::core::sequence::Sequence;
@@ -54,7 +56,10 @@ impl Engine {
   }
   pub fn tick(&mut self) {
     self.sequence.tick(&mut self.stage);
-    // self.stage.print();
+  }
+
+  pub fn send_sacn(&mut self, src: &mut SacnSource) {
+    self.stage.send_sacn(src);
   }
 }
 

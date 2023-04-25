@@ -7,8 +7,6 @@
     randomness: number;
     steps: number;
     speed: number;
-    // on_duration: number;
-    // off_duration: number;
   };
 
 </script>
@@ -16,6 +14,7 @@
 <script lang=ts>
   import { createEventDispatcher } from 'svelte';
   import Color from 'color'
+  import Range from "../Range.svelte";
 
   export let data: RandomChase;
 
@@ -24,6 +23,7 @@
   $: color = Color(data.color).hex()
 
   const onChange = async (diff: Partial<RandomChase>) => {
+    console.log("change", diff)
     dispatch('change', { ...data, ...diff })
   }   
 </script>
@@ -35,20 +35,30 @@
   value={color}
   on:change={(e) => onChange({ color: Color(e.target.value).rgb().array() })}
 />
-<input
-  type='range'
+<Range
+  label='randomness'
   min='0'
   max='1'
   step='0.01'
   value={data.randomness}
-  on:change={(e) => onChange({ randomness: Number(e.target.value) })}
+  on:change={({ detail }) => {
+    console.log('hmm');
+    onChange({ randomness: Number(detail.value) })
+  }}
 />
-<input
-  type='range'
+<Range
+  label='steps'
   min='1'
   max='25'
   value={data.steps}
-  on:change={(e) => onChange({ steps: Number(e.target.value) })}
+  on:change={({ detail }) => onChange({ steps: Number(detail.value) })}
+/>
+<Range
+  label='speed'
+  min='1'
+  max='25'
+  value={data.speed}
+  on:change={({ detail }) => onChange({ speed: Number(detail.value) })}
 />
 
 <style>
