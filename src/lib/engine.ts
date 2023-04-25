@@ -1,34 +1,22 @@
 import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
-import { readable } from "svelte/store";
+import { derived, readable } from "svelte/store";
 
-type Color = [number, number, number];
-type Fade = {
-  name: "fade";
-  color: Color;
-  duration: number;
-};
-type Blink = {
-  name: "blink";
-  color: Color;
-  on_duration: number;
-  off_duration: number;
-};
-type Solid = {
-  name: "solid";
-  color: Color;
-  on_duration: number;
-  off_duration: number;
-};
+import type { Color } from "./type";
+import type { Solid } from "./patterns/Solid.svelte";
+import type { Fade } from "./patterns/Fade.svelte";
+import type { Blink } from "./patterns/Blink.svelte";
 
 export type Pattern = Solid | Fade | Blink;
 
-export const isSolidPattern = (pattern: Pattern): pattern is Solid =>
-  pattern.name === "solid";
-export const isFadePattern = (pattern: Pattern): pattern is Fade =>
-  pattern.name === "fade";
-export const isBlinkPattern = (pattern: Pattern): pattern is Blink =>
-  pattern.name === "blink";
+export const isPatternOf =
+  <T extends Pattern>(name: Pattern["name"]) =>
+  (pattern: Pattern): pattern is T =>
+    pattern.name === name;
+
+export const isSolidPattern = isPatternOf<Solid>("solid");
+export const isFadePattern = isPatternOf<Fade>("fade");
+export const isBlinkPattern = isPatternOf<Blink>("blink");
 
 export type Sequence = {
   current: number;
@@ -53,3 +41,15 @@ export const engine = readable<Engine>(null, (set) => {
     set(event.payload);
   });
 });
+
+export const time = derived(engine, (engine) => engine?.sequence.time);
+export const stage = derived(engine, (engine) => engine?.stage);
+export const currentPattern = derived(
+  engine,
+  (engine) => engine?.sequence.current
+);
+export const sequence = derived(engine, (engine) => engine?.sequence);
+export const patterns = derived(
+  engine,
+  (engine) => engine?.sequence.patterns || []
+);

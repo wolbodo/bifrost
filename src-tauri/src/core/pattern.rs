@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::core::stage;
 
 pub trait Pattern: Send + Sync + erased_serde::Serialize {
-  fn tick(&mut self, stage: &mut stage::Stage) -> ();
+  fn tick(&mut self, stage: &mut stage::Stage);
   fn boxed_clone(&self) -> Box<dyn Pattern>;
   fn clone_box(&self) -> Box<dyn Pattern> {
       self.boxed_clone()
@@ -18,15 +18,14 @@ impl Clone for Box<dyn Pattern> {
   }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Solid {
   name: String,
   pub color: stage::Color,
 }
 
 impl Pattern for Solid {
-  fn tick(&mut self, stage: &mut stage::Stage) -> () {
-    println!("solid: {:?}", self.color);
+  fn tick(&mut self, stage: &mut stage::Stage) {
     for i in 0..stage.size {
       stage.set(i, self.color);
     }
@@ -46,19 +45,19 @@ impl Solid {
   }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
-enum BlinkState {
-  On,
-  Off,
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct BlinkState {
+  state: bool,
+  time: u32,
 }
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Blink {
   name: String,
   color: stage::Color,
   on_duration: u32,
   off_duration: u32,
-  state: BlinkState,
-  time: u32,
+  state: Option<BlinkState>
 }
 
 impl Blink {
@@ -68,36 +67,46 @@ impl Blink {
       color,
       on_duration,
       off_duration,
-      state: BlinkState::Off,
-      time: off_duration,
+      state: Some(BlinkState {
+        state: true,
+        time: on_duration,
+      })
     }
   }
 }
 
 impl Pattern for Blink {
-  fn tick(&mut self, stage: &mut stage::Stage) -> () {
-    println!("blink: {:?}", self.color);
-    self.time -= 1;
-    match self.state {
-      BlinkState::On => {
-        if self.time == 0 {
-          self.state = BlinkState::Off;
-          self.time = self.off_duration;
+  fn tick(&mut self, stage: &mut stage::Stage) {
+    if self.state.is_none() {
+      self.state = Some(BlinkState {
+        state: true,
+        time: self.on_duration,
+      });
+    }
+    let mut state = self.state.take().unwrap();
+    
+    state.time -= 1;
+    match state.state {
+      true => {
+        if state.time == 0 {
+          state.state = false;
+          state.time = self.off_duration;
         }
       }
-      BlinkState::Off => {
-        if self.time == 0 {
-          self.state = BlinkState::On;
-          self.time = self.on_duration;
+      false => {
+        if state.time == 0 {
+          state.state = true;
+          state.time = self.on_duration;
         }
       }
     }
     for i in 0..stage.size {
-      stage.set(i, match self.state {
-        BlinkState::On => self.color,
-        BlinkState::Off => [0, 0, 0],
+      stage.set(i, match state.state {
+        true => self.color,
+        false => [0, 0, 0],
       })
     }
+    self.state = Some(state);
   }
 
   fn boxed_clone(&self) -> Box<dyn Pattern> {
@@ -105,7 +114,7 @@ impl Pattern for Blink {
   }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Fade {
   name: String,
   pub color: stage::Color,
@@ -123,7 +132,7 @@ impl Fade {
   }
 }
 impl Pattern for Fade {
-  fn tick(&mut self, stage: &mut stage::Stage) -> () {
+  fn tick(&mut self, stage: &mut stage::Stage) {
     self.time += 1;
     let mut color = self.color;
     for i in 0..3 {
@@ -138,7 +147,7 @@ impl Pattern for Fade {
   }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub enum PatternOption {
   Solid(Solid),
   Blink(Blink),

@@ -1,27 +1,27 @@
 <script lang='ts'>
-  import type { Stage } from './engine'
-  
-  export let stage: Stage
+  import { stage } from './engine';
 </script>
 
 <ul>
-  {#each stage.rgb as rgb}
+  {#each $stage?.rgb || [] as rgb}
     <li style="background: rgb({ rgb })" />
-  {/each}
+  {/each} 
 </ul>
 
 <style>
   ul {
+    grid-area: stage;
+
     --size: 3rem;
     display: grid;
-    grid-template-columns: repeat(4, var(--size));
+    grid-template-columns: repeat(4, minmax(var(--size), 1fr));
     gap: .2rem;
     list-style: none;
     margin: none;
   }
 
   li {
-    width: var(--size);
-    height: var(--size);
+    width: 100%;
+    aspect-ratio: 1;
   }
 </style>

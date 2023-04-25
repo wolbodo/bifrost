@@ -55,7 +55,7 @@ impl Engine {
   }
   pub fn tick(&mut self) {
     self.sequence.tick(&mut self.stage);
-    self.stage.print();
+    // self.stage.print();
   }
 }
 
@@ -63,6 +63,7 @@ impl Engine {
 
 #[tauri::command]
 pub fn add_pattern(pattern: PatternOption, engine: tauri::State<Arc<Mutex<Engine>>>) {
+  println!("add_pattern: {:?}", pattern);
   let pattern: Box<dyn Pattern> = match pattern {
     PatternOption::Solid(solid) => {
       Box::new(solid)
@@ -80,6 +81,7 @@ pub fn add_pattern(pattern: PatternOption, engine: tauri::State<Arc<Mutex<Engine
 
 #[tauri::command]
 pub fn edit_pattern(index: usize, pattern: PatternOption, engine: tauri::State<Arc<Mutex<Engine>>>) {
+  println!("edit_pattern({:?}) {:?}", index, pattern);
   let pattern: Box<dyn Pattern> = match pattern {
     PatternOption::Solid(solid) => {
       Box::new(solid)
@@ -96,6 +98,7 @@ pub fn edit_pattern(index: usize, pattern: PatternOption, engine: tauri::State<A
 
 #[tauri::command]
 pub fn delete_pattern(index: usize, engine: tauri::State<Arc<Mutex<Engine>>>) {
+  println!("delete_pattern: {:?}", index);
   engine.blocking_lock().delete_pattern(index);
 }
 

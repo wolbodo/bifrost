@@ -23,7 +23,7 @@ fn init_engine(handle: tauri::AppHandle, window: Window, engine: tauri::State<Ar
         engine::State::Stopped => {
             engine.state = engine::State::Running;
             tauri::async_runtime::spawn(async move {
-                let mut interval = tokio::time::interval(   Duration::from_millis(100));
+                let mut interval = tokio::time::interval(   Duration::from_millis(20));
                 let engine_mutex = handle.state::<Arc<Mutex<engine::Engine>>>();
                 
                 loop {
@@ -71,6 +71,7 @@ impl AppBuilder {
 
     let setup = self.setup;
     tauri::Builder::default()
+      .manage(Arc::new(Mutex::new(engine)))
       .invoke_handler(tauri::generate_handler![
           init_engine,
           engine::add_pattern,

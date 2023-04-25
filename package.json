@@ -11,11 +11,12 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@tauri-apps/api": "2.0.0-alpha.3"
+    "@tauri-apps/api": "1.2.0",
+    "@tauri-apps/cli": "^1.2.3",
+    "color": "^4.2.3"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.1.0",
-    "@tauri-apps/cli": "2.0.0-alpha.8",
     "@tsconfig/svelte": "^3.0.0",
     "@types/node": "^18.15.13",
     "internal-ip": "^7.0.0",

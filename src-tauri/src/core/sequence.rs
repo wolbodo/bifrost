@@ -42,14 +42,13 @@ impl Sequence {
     self.patterns.remove(index);
   }
   pub fn tick(&mut self, stage: &mut Stage) {
-    print!("tick ({:?}): {:?} ", self.time, self.patterns.len());
     if !self.patterns.is_empty() {
       if self.time == 0 {
         self.current += 1;
         if self.current >= self.patterns.len() {
           self.current = 0;
         }
-        self.time = 50;
+        self.time = 250;
       }
       self.patterns[self.current].tick(stage);
       self.time -= 1;

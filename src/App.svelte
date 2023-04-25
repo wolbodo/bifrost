@@ -1,35 +1,40 @@
 <script lang="ts">
-  import { engine }from './lib/engine'
+  import { time, sequence }from './lib/engine'
+
   import Stage from './lib/Stage.svelte'
+  import Sequence from './lib/Sequence.svelte'
+  import Pattern from './lib/patterns/Pattern.svelte'
 
-  $: console.log($engine)
-
-  $: currentPattern = $engine?.sequence?.patterns[$engine.sequence.current]
+  $: currentPattern = $sequence?.patterns[$sequence.current]
 </script>
 
-{#if $engine}
 <main>
-  <span>Time: {$engine.sequence.time}</span>
+  <span>Time: {$time}</span>
 
-  <ul>
-    {#each $engine.sequence.patterns as pattern, index}
-      <li class:current={$engine.sequence.current === index}>
-        {pattern.name}
-      </li>
-    {/each}
-  </ul>
+  <Sequence />
+  <Pattern />
 
   <pre>{JSON.stringify(currentPattern, null, 2)}</pre>
   
-  <Stage stage={$engine.stage} />
+  <Stage/>
 </main>
-{/if}
 
 <style>
-  .current {
-    border: thin solid black;
+  main {
+    display: grid;
+    grid-template-areas:
+      "header header"
+      "sequence sequence"
+      "pattern stage"
+      "debug debug";
   }
+
+  span {
+    grid-area: header;
+  }
+
   pre {
+    grid-area: debug;
     border: thin solid black;
   }
 </style>
