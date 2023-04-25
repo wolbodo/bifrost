@@ -6,8 +6,9 @@ import type { Color } from "./type";
 import type { Solid } from "./patterns/Solid.svelte";
 import type { Fade } from "./patterns/Fade.svelte";
 import type { Blink } from "./patterns/Blink.svelte";
+import type { RandomChase } from "./patterns/RandomChase.svelte";
 
-export type Pattern = Solid | Fade | Blink;
+export type Pattern = Solid | Fade | Blink | RandomChase;
 
 export const isPatternOf =
   <T extends Pattern>(name: Pattern["name"]) =>
@@ -17,6 +18,7 @@ export const isPatternOf =
 export const isSolidPattern = isPatternOf<Solid>("solid");
 export const isFadePattern = isPatternOf<Fade>("fade");
 export const isBlinkPattern = isPatternOf<Blink>("blink");
+export const isRandomChasePattern = isPatternOf<RandomChase>("random_chase");
 
 export type Sequence = {
   current: number;

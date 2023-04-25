@@ -1,8 +1,9 @@
 <script lang='ts' context='module'>
-  import { patterns, type Pattern, isSolidPattern, isFadePattern, isBlinkPattern } from '../engine';
+  import { patterns, type Pattern, isSolidPattern, isFadePattern, isBlinkPattern, isRandomChasePattern } from '../engine';
   import Solid, { type Solid as TSolid } from './Solid.svelte'
   import Fade, { type Fade as TFade } from './Fade.svelte'
   import Blink, { type Blink as TBlink } from './Blink.svelte'
+  import RandomChase, { type RandomChase as TRandomChase } from './RandomChase.svelte'
 
   export type PatternEnum = {
     Solid: TSolid,
@@ -10,6 +11,8 @@
     Fade: TFade,
   } | {
     Blink: TBlink,
+  } | {
+    RandomChase: TRandomChase
   }
   
   export const formatPattern = (pattern: Pattern): PatternEnum => {
@@ -19,6 +22,8 @@
       return { Fade: pattern }
     } else if (isBlinkPattern(pattern)) {
       return { Blink: pattern }
+    } else if (isRandomChasePattern(pattern)) {
+      return { RandomChase: pattern }
     } else {
       throw new Error("Unknown pattern")
     }
@@ -49,6 +54,8 @@
       <Fade data={pattern} on:change={apply} />
       {:else if isBlinkPattern(pattern)}
       <Blink data={pattern} on:change={apply} />
+      {:else if isRandomChasePattern(pattern)}
+      <RandomChase data={pattern} on:change={apply} />
       {:else}
       <p>Unknown pattern</p>
     {/if}

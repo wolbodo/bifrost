@@ -12,6 +12,8 @@
   import type { Solid} from "./patterns/Solid.svelte";
   import type { Blink } from "./patterns/Blink.svelte";
   import type { Fade } from "./patterns/Fade.svelte";
+  import type { RandomChase } from "./patterns/RandomChase.svelte";
+  import RandomChase from "./patterns/RandomChase.svelte";
 
   const select = (index) => $selected = index;
 
@@ -45,6 +47,14 @@
         color: randomColor(),
         duration: 500,
       } as Fade)
+    } else if (name === 'random_chase') {
+      addPattern({
+        name,
+        color: randomColor(),
+        randomness: 0,
+        speed: 10,
+        steps: 4,
+      } as RandomChase)
     } else {
       throw new Error(`Unknown pattern name: ${name}`)
     }
@@ -57,7 +67,7 @@
 
   <select on:change={onChange}>
     <option>Add +</option>
-    {#each ['solid', 'blink', 'fade'] as name}
+    {#each ['solid', 'blink', 'fade', 'random_chase'] as name}
     <option>{name}</option>
     {/each}
   </select>

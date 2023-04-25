@@ -1,5 +1,5 @@
 
 pub mod engine;
-pub mod pattern;
+pub mod patterns;
 pub mod stage;
 pub mod sequence;

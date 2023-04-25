@@ -1,12 +1,12 @@
 use serde::Serialize;
 // use serde_traitobject::{Arc, Serialize};
 
-use crate::core::stage::Stage;
-use crate::core::pattern::Pattern;
+use crate::core::stage::{Stage, Color};
+use crate::core::patterns::{Show, Pattern};
 
 #[derive(Serialize)]
 pub struct Sequence {
-  patterns: Vec<Box<dyn Pattern>>,
+  patterns: Vec<Box<dyn Show>>,
   pub current: usize,
   time: u32,
 }
@@ -32,11 +32,11 @@ impl Sequence {
   pub fn get_time(&self) -> u32 {
     self.time
   }
-  pub fn add_pattern(&mut self, pattern: Box<dyn Pattern>) {
-    self.patterns.push(pattern);
+  pub fn add_pattern(&mut self, pattern: Pattern) {
+    self.patterns.push(Box::new(pattern));
   }
-  pub fn edit_pattern(&mut self, index: usize, pattern: Box<dyn Pattern>) {
-    self.patterns[index] = pattern;
+  pub fn edit_pattern(&mut self, index: usize, pattern: Pattern) {
+    self.patterns[index] = Box::new(pattern);
   }
   pub fn delete_pattern(&mut self, index: usize) {
     if (index < self.current) {
@@ -57,7 +57,7 @@ impl Sequence {
       self.time -= 1;
     } else {
       for i in 0..stage.size {
-        stage.set(i, [0,0,0]);
+        stage.set(i, Color(0,0,0));
       }
     }
   }

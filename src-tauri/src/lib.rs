@@ -5,7 +5,7 @@ use std::{time::Duration, sync::{Arc}};
 use tauri::{Manager, async_runtime::Mutex, Window, };
 use tokio;
 
-use crate::core::{engine, pattern, stage};
+use crate::core::{engine, patterns, stage};
 
 #[cfg(mobile)]
 mod mobile;
@@ -63,11 +63,7 @@ impl AppBuilder {
   }
 
   pub fn run(self) {
-    let mut engine = engine::Engine::new(stage::Stage::new(12));
-
-    engine.add_pattern(Box::new(pattern::Solid::new([255, 0, 0])));
-    engine.add_pattern(Box::new(pattern::Blink::new([0, 255, 0], 10, 10)));
-    engine.add_pattern(Box::new(pattern::Fade::new([0, 0, 255], 100)));
+    let engine = engine::Engine::new(stage::Stage::new(12));
 
     let setup = self.setup;
     tauri::Builder::default()

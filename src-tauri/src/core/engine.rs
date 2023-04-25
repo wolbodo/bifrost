@@ -6,8 +6,7 @@ use serde::Serialize;
 use serde_json::Value;
 use tauri::async_runtime::Mutex;
 
-use crate::core::pattern::{self, Pattern};
-use crate::core::pattern::PatternOption;
+use crate::core::patterns::Pattern;
 use crate::core::stage::Stage;
 use crate::core::sequence::Sequence;
 
@@ -44,10 +43,10 @@ impl Engine {
   pub fn set_speed(&mut self, speed: u32) {
     self.speed = speed;
   }
-  pub fn add_pattern(&mut self, pattern: Box<dyn pattern::Pattern>) {
+  pub fn add_pattern(&mut self, pattern: Pattern) {
     self.sequence.add_pattern(pattern);
   }
-  pub fn edit_pattern(&mut self, index: usize, pattern: Box<dyn pattern::Pattern>) {
+  pub fn edit_pattern(&mut self, index: usize, pattern: Pattern) {
     self.sequence.edit_pattern(index, pattern);
   }
   pub fn delete_pattern(&mut self, index: usize) {
@@ -62,37 +61,15 @@ impl Engine {
 
 
 #[tauri::command]
-pub fn add_pattern(pattern: PatternOption, engine: tauri::State<Arc<Mutex<Engine>>>) {
+pub fn add_pattern(pattern: Pattern, engine: tauri::State<Arc<Mutex<Engine>>>) {
   println!("add_pattern: {:?}", pattern);
-  let pattern: Box<dyn Pattern> = match pattern {
-    PatternOption::Solid(solid) => {
-      Box::new(solid)
-    }
-    PatternOption::Blink(blink) => {
-      Box::new(blink)
-    }
-    PatternOption::Fade(fade) => {
-      Box::new(fade)
-    }
-  };
   engine.blocking_lock().add_pattern(pattern);
 }
 
 
 #[tauri::command]
-pub fn edit_pattern(index: usize, pattern: PatternOption, engine: tauri::State<Arc<Mutex<Engine>>>) {
+pub fn edit_pattern(index: usize, pattern: Pattern, engine: tauri::State<Arc<Mutex<Engine>>>) {
   println!("edit_pattern({:?}) {:?}", index, pattern);
-  let pattern: Box<dyn Pattern> = match pattern {
-    PatternOption::Solid(solid) => {
-      Box::new(solid)
-    }
-    PatternOption::Blink(blink) => {
-      Box::new(blink)
-    }
-    PatternOption::Fade(fade) => {
-      Box::new(fade)
-    }
-  };
   engine.blocking_lock().edit_pattern(index, pattern);
 }
 
