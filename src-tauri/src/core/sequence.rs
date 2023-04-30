@@ -39,7 +39,7 @@ impl Sequence {
     self.patterns[index] = Box::new(pattern);
   }
   pub fn delete_pattern(&mut self, index: usize) {
-    if (index < self.current) {
+    if (index <= self.current) {
       self.current -= 1;
     }
     self.patterns.remove(index);

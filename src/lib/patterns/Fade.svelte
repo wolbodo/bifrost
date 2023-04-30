@@ -10,6 +10,7 @@
 
 <script lang=ts>
   import Color from 'color'
+  import Range from "../Range.svelte";
   import { createEventDispatcher } from 'svelte';
 
   export let data: Fade;
@@ -18,11 +19,8 @@
 
   $: color = Color(data.color).hex()
 
-  const onChange = async (e: Event) => {
-    const target = e.target as HTMLInputElement
-    color = Color(target.value)
-
-    dispatch('change', { ...data, color: color.rgb().array()})
+  const onChange = async (diff: Partial<Fade>) => {
+    dispatch('change', { ...data, ...diff })
   }   
 </script>
 
@@ -31,7 +29,16 @@
     type='color'
     style:--color={color}
     value={color}
-    on:change={onChange}
+    on:change={(e) => onChange({ color: Color(e.target.value).rgb().array() })}
+  />
+  <Range
+    label='duration'
+    min='0'
+    max='100'
+    value={data.duration}
+    on:change={({ detail }) => {
+      onChange({ duration: Number(detail.value) })
+    }}
   />
 
 <style>

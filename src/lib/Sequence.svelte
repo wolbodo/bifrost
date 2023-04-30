@@ -7,17 +7,16 @@
 <script lang="ts">
   import { sequence } from "./engine";
   import { invoke } from "@tauri-apps/api";
-  import { formatPattern } from "./patterns/Pattern.svelte";
-  import type { Pattern } from "./engine";
+  import { type Pattern, formatPattern } from "./patterns/pattern";
   import type { Solid} from "./patterns/Solid.svelte";
   import type { Blink } from "./patterns/Blink.svelte";
   import type { Fade } from "./patterns/Fade.svelte";
   import type { RandomChase } from "./patterns/RandomChase.svelte";
-  import RandomChase from "./patterns/RandomChase.svelte";
 
   const select = (index) => $selected = index;
 
   const addPattern = (pattern: Pattern): void => {
+    console.log(pattern, formatPattern(pattern))
     invoke("add_pattern", { pattern: formatPattern(pattern) })
   }
 

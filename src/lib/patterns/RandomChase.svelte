@@ -23,7 +23,6 @@
   $: color = Color(data.color).hex()
 
   const onChange = async (diff: Partial<RandomChase>) => {
-    console.log("change", diff)
     dispatch('change', { ...data, ...diff })
   }   
 </script>
@@ -42,7 +41,6 @@
   step='0.01'
   value={data.randomness}
   on:change={({ detail }) => {
-    console.log('hmm');
     onChange({ randomness: Number(detail.value) })
   }}
 />
