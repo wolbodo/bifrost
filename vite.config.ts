@@ -27,9 +27,9 @@ export default defineConfig(async () => {
       port: 5173,
       strictPort: true,
       hmr: {
-        // protocol: "ws",
+        protocol: "ws",
         host,
-        // port: 5183,
+        port: 5183,
       },
     },
     // to make use of `TAURI_DEBUG` and other env variables

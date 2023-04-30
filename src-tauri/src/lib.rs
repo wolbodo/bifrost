@@ -7,7 +7,7 @@ use tokio;
 use std::net::{IpAddr, SocketAddr};
 use sacn::source::SacnSource;
 
-use crate::core::{engine, patterns, stage};
+use crate::core::{engine, stage};
 
 #[cfg(mobile)]
 mod mobile;
