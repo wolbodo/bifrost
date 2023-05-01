@@ -12,6 +12,7 @@
   import Color from 'color'
   import Range from "../Range.svelte";
   import { createEventDispatcher } from 'svelte';
+  import ColorPicker from "../ColorPicker.svelte";
 
   export let data: Fade;
 
@@ -25,12 +26,14 @@
 </script>
 
   <h2>{data.name}</h2>
-  <input
-    type='color'
-    style:--color={color}
-    value={color}
-    on:change={(e) => onChange({ color: Color(e.target.value).rgb().array() })}
+  
+  <ColorPicker
+    color={Color.rgb(data.color)}
+    on:change={({ detail }) => {
+      onChange({ color: detail.value })
+    }}
   />
+
   <Range
     label='duration'
     min='0'

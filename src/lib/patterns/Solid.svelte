@@ -12,34 +12,22 @@
 <script lang=ts>
   import type { Color as TColor } from "../type";
   import { createEventDispatcher } from 'svelte';
+  import ColorPicker from '../ColorPicker.svelte';
 
   export let data: Solid;
 
   const dispatch = createEventDispatcher();
 
-  $: color = Color(data.color).hex()
-
-  const onChange = async (e: Event) => {
-    const target = e.target as HTMLInputElement
-    color = Color(target.value)
-
-    dispatch('change', { ...data, color: color.rgb().array()})
+  const onChange = async (diff: Partial<Solid>) => {
+    dispatch('change', { ...data, ...diff })
   }   
 </script>
 
   <h2>{data.name}</h2>
-  <input
-    type='color'
-    style:--color={color}
-    value={color}
-    on:change={onChange}
+  
+  <ColorPicker
+    color={Color.rgb(data.color)}
+    on:change={({ detail }) => {
+      onChange({ color: detail.value })
+    }}
   />
-
-<style>
-  input {
-    background: var(--color);
-
-    width: 3rem;
-    height: 3rem;
-  }
-</style>

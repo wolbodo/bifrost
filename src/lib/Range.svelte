@@ -5,15 +5,17 @@
   
   export let label: string;
   export let value: number;
+
+  const onChange = (e: Event) => dispatch('change', { value: (e.target as HTMLInputElement).value })
 </script>
 
 <label>
-  {label}:
+  {label}: {value}
   <input
     {...$$restProps}
     type='range'
     {value}
-    on:change={(e) => dispatch('change', { value: e.target.value })}
+    on:change={onChange}
   />
 </label>
 

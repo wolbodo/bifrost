@@ -2,17 +2,19 @@
   import { patterns } from '../engine';
   import { invoke } from '@tauri-apps/api';
 
+  import { debounce } from '../util';
+
   import { selected } from '../Sequence.svelte'
   import { type Pattern, getComponent, formatPattern } from './pattern';
 
   $: pattern = $patterns? $patterns[$selected] : null as Pattern
 
-  const apply = async ({ detail }) => {
+  const apply = debounce(async ({ detail }) => {
     console.log("apply", detail)
     await invoke("edit_pattern",
       { index: $selected, pattern: formatPattern(detail) }
     )
-  }
+  }, 100)
 </script>
 
 {#if pattern}

@@ -13,6 +13,8 @@
 <script lang=ts>
   import { createEventDispatcher } from 'svelte';
   import Color from 'color'
+  import Range from "../Range.svelte";
+  import ColorPicker from "../ColorPicker.svelte";
 
   export let data: Blink;
 
@@ -26,32 +28,25 @@
 </script>
 
 <h2>{data.name}</h2>
-<input
-  type='color'
-  style:--color={color}
-  value={color}
-  on:change={(e) => onChange({ color: Color(e.target.value).rgb().array() })}
+
+<ColorPicker
+  color={Color.rgb(data.color)}
+  on:change={({ detail }) => {
+    onChange({ color: detail.value })
+  }}
 />
-<input
-  type='range'
+
+<Range
+  label='on'
   min='1'
   max='100'
   value={data.on_duration}
-  on:change={(e) => onChange({ on_duration: Number(e.target.value) })}
+  on:change={({ detail: { value }}) => onChange({ on_duration: Number(value) })}
 />
-<input
-  type='range'
+<Range
+  label='off'
   min='1'
   max='100'
   value={data.off_duration}
-  on:change={(e) => onChange({ off_duration: Number(e.target.value) })}
+  on:change={({ detail: { value }}) => onChange({ off_duration: Number(value) })}
 />
-
-<style>
-  input {
-    background: var(--color);
-
-    width: 3rem;
-    height: 3rem;
-  }
-</style>

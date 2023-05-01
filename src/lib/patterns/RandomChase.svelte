@@ -15,12 +15,11 @@
   import { createEventDispatcher } from 'svelte';
   import Color from 'color'
   import Range from "../Range.svelte";
+  import ColorPicker from "../ColorPicker.svelte";
 
   export let data: RandomChase;
 
   const dispatch = createEventDispatcher();
-
-  $: color = Color(data.color).hex()
 
   const onChange = async (diff: Partial<RandomChase>) => {
     dispatch('change', { ...data, ...diff })
@@ -28,12 +27,14 @@
 </script>
 
 <h2>{data.name}</h2>
-<input
-  type='color'
-  style:--color={color}
-  value={color}
-  on:change={(e) => onChange({ color: Color(e.target.value).rgb().array() })}
+
+<ColorPicker
+  color={Color.rgb(data.color)}
+  on:change={({ detail }) => {
+    onChange({ color: detail.value })
+  }}
 />
+
 <Range
   label='randomness'
   min='0'
