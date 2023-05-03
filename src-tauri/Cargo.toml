@@ -26,6 +26,9 @@ rand = "0.8.5"
 colors-transform = "0.2.11"
 enum_dispatch = "0.3.11"
 sacn = { git = "https://github.com/macoss/sacn" }
+libmdns = "0.7.5"
+mdns = "3.0.0"
+futures-util = "0.3.28"
 
 
 [features]

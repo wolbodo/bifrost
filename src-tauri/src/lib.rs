@@ -6,8 +6,7 @@ use tauri::{Manager, async_runtime::Mutex, Window, };
 use tokio;
 use std::net::{IpAddr, SocketAddr};
 use sacn::source::SacnSource;
-
-use crate::core::{engine, stage};
+use crate::core::{engine, stage, mdns};
 
 #[cfg(mobile)]
 mod mobile;
@@ -46,8 +45,6 @@ fn init_engine(handle: tauri::AppHandle, window: Window, engine: tauri::State<Ar
         engine::State::Running => {}
     }
 }
-
-
 #[derive(Default)]
 pub struct AppBuilder {
   setup: Option<SetupHook>,
@@ -69,6 +66,7 @@ impl AppBuilder {
 
   pub fn run(self) {
     let engine = engine::Engine::new(stage::Stage::new(12));
+    let services: mdns::ServiceMap = mdns::ServiceMap::new();
 
     // setup plugin specific state here
     let local_addr: SocketAddr = SocketAddr::new(IpAddr::V4("0.0.0.0".parse().unwrap()), 8000);
@@ -80,8 +78,10 @@ impl AppBuilder {
     tauri::Builder::default()
       .manage(Arc::new(Mutex::new(engine)))
       .manage(Arc::new(Mutex::new(src)))
+      .manage(Arc::new(Mutex::new(services)))
       .invoke_handler(tauri::generate_handler![
           init_engine,
+          mdns::discover,
           engine::add_pattern,
           engine::edit_pattern,
           engine::delete_pattern,
