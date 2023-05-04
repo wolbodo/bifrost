@@ -1,12 +1,12 @@
 mod core;
 
-use tauri::App;
-use std::{time::Duration, sync::{Arc}};
-use tauri::{Manager, async_runtime::Mutex, Window, };
-use tokio;
-use std::net::{IpAddr, SocketAddr};
+use crate::core::{engine, mdns, stage};
 use sacn::source::SacnSource;
-use crate::core::{engine, stage, mdns};
+use std::net::{IpAddr, SocketAddr};
+use std::{sync::Arc, time::Duration};
+use tauri::App;
+use tauri::{async_runtime::Mutex, Manager, Window};
+use tokio;
 
 #[cfg(mobile)]
 mod mobile;
@@ -17,83 +17,79 @@ pub type SetupHook = Box<dyn FnOnce(&mut App) -> Result<(), Box<dyn std::error::
 
 // init a background process on the command, and emit periodic events only to the window that used the command
 #[tauri::command]
-fn init_engine(handle: tauri::AppHandle, window: Window, engine: tauri::State<Arc<Mutex<engine::Engine>>>) {
+fn init_engine(
+    handle: tauri::AppHandle,
+    window: Window,
+    engine: tauri::State<Arc<Mutex<engine::Engine>>>,
+) {
     let mut engine = engine.blocking_lock();
 
     match engine.state {
         engine::State::Stopped => {
             engine.state = engine::State::Running;
             tauri::async_runtime::spawn(async move {
-                let mut interval = tokio::time::interval(   Duration::from_millis(20));
+                let mut interval = tokio::time::interval(Duration::from_millis(100));
                 let engine_mutex = handle.state::<Arc<Mutex<engine::Engine>>>();
-                let src_mutex = handle.state::<Arc<Mutex<SacnSource>>>();
-                
+
                 loop {
                     {
-                        let mut engine: tokio::sync::MutexGuard<engine::Engine> = engine_mutex.lock().await;
+                        let mut engine = engine_mutex.lock().await;
                         engine.tick();
-                        let mut src = src_mutex.lock().await;
-                        engine.send_sacn(&mut src);
-                        window.emit("tick", serde_json::to_value(engine.clone()).unwrap()).unwrap();
+                        window
+                            .emit("tick", serde_json::to_value(&*engine).unwrap())
+                            .unwrap();
                     }
-        
+
                     interval.tick().await;
                 }
             });
-        
-        },
+        }
         engine::State::Running => {}
     }
 }
 #[derive(Default)]
 pub struct AppBuilder {
-  setup: Option<SetupHook>,
+    setup: Option<SetupHook>,
 }
 
 impl AppBuilder {
-  pub fn new() -> Self {
-    Self::default()
-  }
+    pub fn new() -> Self {
+        Self::default()
+    }
 
-  #[must_use]
-  pub fn setup<F>(mut self, setup: F) -> Self
-  where
-    F: FnOnce(&mut App) -> Result<(), Box<dyn std::error::Error>> + Send + 'static,
-  {
-    self.setup.replace(Box::new(setup));
-    self
-  }
+    #[must_use]
+    pub fn setup<F>(mut self, setup: F) -> Self
+    where
+        F: FnOnce(&mut App) -> Result<(), Box<dyn std::error::Error>> + Send + 'static,
+    {
+        self.setup.replace(Box::new(setup));
+        self
+    }
 
-  pub fn run(self) {
-    let engine = engine::Engine::new(stage::Stage::new(12));
-    let services: mdns::ServiceMap = mdns::ServiceMap::new();
+    pub fn run(self) {
+        let engine = engine::Engine::new();
+        let services: mdns::ServiceMap = mdns::ServiceMap::new();
 
-    // setup plugin specific state here
-    let local_addr: SocketAddr = SocketAddr::new(IpAddr::V4("0.0.0.0".parse().unwrap()), 8000);
-    let mut src =  SacnSource::with_ip("Wolbodo Lights", local_addr).unwrap();
-    src.register_universe(1).unwrap(); // Register with the source that will be sending on the given universe.
-
-    
-    let setup = self.setup;
-    tauri::Builder::default()
-      .manage(Arc::new(Mutex::new(engine)))
-      .manage(Arc::new(Mutex::new(src)))
-      .manage(Arc::new(Mutex::new(services)))
-      .invoke_handler(tauri::generate_handler![
-          init_engine,
-          mdns::discover,
-          engine::add_pattern,
-          engine::edit_pattern,
-          engine::delete_pattern,
-          engine::get_sequence,
-      ])
-      .setup(move |app| {
-        if let Some(setup) = setup {
-          (setup)(app)?;
-        }
-        Ok(())
-      })
-      .run(tauri::generate_context!())
-      .expect("error while running tauri application");
-  }
+        let setup = self.setup;
+        tauri::Builder::default()
+            .manage(Arc::new(Mutex::new(engine)))
+            .manage(Arc::new(Mutex::new(services)))
+            .invoke_handler(tauri::generate_handler![
+                init_engine,
+                mdns::discover,
+                engine::add_pattern,
+                engine::edit_pattern,
+                engine::delete_pattern,
+                engine::get_sequence,
+                engine::set_service,
+            ])
+            .setup(move |app| {
+                if let Some(setup) = setup {
+                    (setup)(app)?;
+                }
+                Ok(())
+            })
+            .run(tauri::generate_context!())
+            .expect("error while running tauri application");
+    }
 }

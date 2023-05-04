@@ -6,7 +6,7 @@ import type { Pattern } from "./patterns/pattern";
 
 export type Sequence = {
   current: number;
-  patterns: Pattern[];
+  patterns: { [key: string]: Pattern }[];
   time: number;
 };
 
@@ -24,6 +24,7 @@ export type Engine = {
 export const engine = readable<Engine>(null, (set) => {
   invoke("init_engine");
   listen<Engine>("tick", (event) => {
+    console.log(event);
     set(event.payload);
   });
 });
@@ -36,6 +37,6 @@ export const currentPattern = derived(
 );
 export const sequence = derived(engine, (engine) => engine?.sequence);
 export const patterns = derived(
-  engine,
-  (engine) => engine?.sequence.patterns || []
+  sequence,
+  (sequence) => sequence?.patterns.map((p) => Object.values(p)[0]) || []
 );

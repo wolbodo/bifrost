@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-  import { sequence } from "./engine";
+  import { sequence, patterns } from "./engine";
   import { invoke } from "@tauri-apps/api";
   import { type Pattern, formatPattern } from "./patterns/pattern";
   import type { Solid} from "./patterns/Solid.svelte";
@@ -72,7 +72,7 @@
   </select>
   
   <section>
-    {#each $sequence?.patterns || [] as pattern, index}
+    {#each $patterns || [] as pattern, index}
     <button
     class:current={$sequence.current === index}
     class:selected={$selected === index}

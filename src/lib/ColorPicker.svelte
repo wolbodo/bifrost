@@ -13,14 +13,17 @@
 	let dragstart =false
 
 
+	const change = () => {
+    dispatch('change', { value: color.rgb().array().map(v => v|0) })
+
+	}
 	const setHue = (x, y) => {
 		if (!el) return
 
 		const { width, height } = el.getBoundingClientRect()
     const hue = 180 - (Math.atan2(x / width - 0.5, y / height - 0.5) / Math.PI) * 180	
 		color = color.hue(hue)
-
-    dispatch('change', { value: color.rgb().array().map(v => v|0) })
+		change()
 	}
 	const onMouse = (e) => {
 		if (!dragstart) return 
@@ -49,6 +52,15 @@
 	<div class='gradient' />
 	<div class='pointer' />
 </article>
+<input type=range min=0 max=100 on:change={(e => {
+	color = color.value(e.target.value)
+	change()
+})} />
+<input type=range min=0 max=100 on:change={(e => {
+	color = color.saturationv(e.target.value)
+	change()
+
+})} />
 
 
 <style>

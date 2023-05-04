@@ -29,7 +29,7 @@ sacn = { git = "https://github.com/macoss/sacn" }
 libmdns = "0.7.5"
 mdns = "3.0.0"
 futures-util = "0.3.28"
-
+phf = { version = "0.11", features = ["macros"] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
