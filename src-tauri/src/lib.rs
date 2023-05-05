@@ -37,11 +37,13 @@ impl AppBuilder {
     pub fn run(self) {
         let engine = core::engine::Engine::new();
         let services: core::mdns::ServiceMap = core::mdns::ServiceMap::new();
+        let timer = core::timer::Timer::default();
 
         let setup = self.setup;
         tauri::Builder::default()
             .manage(Arc::new(Mutex::new(engine)))
             .manage(Arc::new(Mutex::new(services)))
+            .manage(Arc::new(Mutex::new(timer)))
             .invoke_handler(tauri::generate_handler![
                 init_engine,
                 discover,
@@ -50,6 +52,9 @@ impl AppBuilder {
                 delete_pattern,
                 get_sequence,
                 set_service,
+
+                start_timer,
+                set_timer,
             ])
             .setup(move |app| {
                 if let Some(setup) = setup {
@@ -174,3 +179,24 @@ fn set_service(
         engine.set_stage(core::stage::Stage::new(service));
     }
 }
+
+#[tauri::command]
+fn start_timer(timer: tauri::State<Arc<Mutex<core::timer::Timer>>>, duration: u64) {
+    let mut timer = timer.blocking_lock();
+    let mut time = 0;
+    timer.start(Duration::from_millis(duration), move || {
+        time += 1;
+        println!("Tick {:?}ms", time);
+    });
+}
+
+#[tauri::command]
+fn set_timer(timer: tauri::State<Arc<Mutex<core::timer::Timer>>>, duration: u64) {
+    let mut timer = timer.blocking_lock();
+    timer.set_interval(Duration::from_millis(duration));
+}
+
+// #[tauri::command]
+// fn stop_timer(mut timer: core::timer::Timer) {
+//     timer.stop();
+// }

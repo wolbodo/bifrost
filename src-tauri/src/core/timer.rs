@@ -1,56 +1,79 @@
 use std::time::Duration;
-
-use tauri::{AppHandle, Event, Manager, Runtime};
+use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver};
+use tokio::time;
+use tauri::async_runtime::{spawn, JoinHandle};
 
 #[derive(Default)]
-struct Timer {
-    app_handle: Option<AppHandle>,
+pub struct Timer {
     interval: Option<Duration>,
-    timer_id: Option<tauri::AsyncInterval>,
+    handle: Option<JoinHandle<()>>,
+    sender: Option<tokio::sync::mpsc::UnboundedSender<Duration>>,
 }
 
 impl Timer {
-    fn start(&mut self, duration: Duration) {
-        if let Some(interval) = self.interval {
-            if interval != duration {
-                self.stop();
-            }
-        }
-        self.interval = Some(duration);
-
-        if let Some(app_handle) = &self.app_handle {
-            if let Some(timer_id) = &self.timer_id {
-                app_handle.clear_interval(timer_id);
-            }
-            self.timer_id = Some(app_handle.set_interval(
-                move || Timer::tick(app_handle.clone()),
-                duration.as_millis() as u32,
-            ));
+    pub fn new() -> Self {
+        Self {
+            interval: None,
+            handle: None,
+            sender: None,
         }
     }
 
-    fn stop(&mut self) {
-        if let Some(app_handle) = &self.app_handle {
-            if let Some(timer_id) = &self.timer_id {
-                app_handle.clear_interval(timer_id);
-            }
+    pub fn start<F>(&mut self, interval: Duration, callback: F)
+    where
+        F: FnMut() + Send + 'static,
+    {
+        if let Some(sender) = self.sender.take() {
+            drop(sender);
+        }
+        if let Some(handle) = self.handle.take() {
+            handle.abort();
+        }
+        let (sender, receiver) = unbounded_channel::<Duration>();
+        let handle = spawn(async move {
+            Self::timer_loop(interval, receiver, callback).await;
+        });
+        self.interval = Some(interval);
+        self.sender = Some(sender);
+        self.handle = Some(handle);
+    }
+
+    pub async fn stop(&mut self) {
+        if let Some(sender) = self.sender.take() {
+            drop(sender);
+        }
+        if let Some(handle) = self.handle.take() {
+            handle.abort();
+            handle.await.unwrap_or_default();
         }
         self.interval = None;
-        self.timer_id = None;
     }
 
-    fn tick(app_handle: AppHandle) {
-        app_handle.emit_all(
-            Event::new("timer_tick", Some(json!({})))
-        );
+    pub fn set_interval(&mut self, period: Duration) {
+        if let Some(sender) = self.sender.as_ref() {
+            println!("set_interval send");
+            sender.send(period).unwrap();
+        }
+        self.interval = Some(period);
+    }
+
+    async fn timer_loop<F>(period: Duration, mut receiver: UnboundedReceiver<Duration>, mut callback: F)
+    where
+        F: FnMut() + Send,
+    {
+        let mut interval = time::interval(period);
+        loop {
+            tokio::select! {
+                _ = interval.tick() => {
+                    callback();
+                }
+                Some(period) = receiver.recv() => {
+                    println!("timer loop recv {:?}", period);
+                    interval.tick().await;
+                    println!("Contrinue timer loop");
+                    interval = time::interval(period);
+                }
+            }
+        }
     }
 }
-
-
-// impl Manager for Timer {
-//   fn prepare(&mut self, handle: &AppHandle) {
-//       self.app_handle = Some(handle.clone());
-//   }
-// }
-
-// impl Runtime for Timer {}
