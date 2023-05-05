@@ -29,8 +29,6 @@
       <li style="background: rgb({ rgb })" />
     {/each} 
   </ul>
-  
-
 </section>
 
 <style>
@@ -40,7 +38,7 @@
   ul {
     --size: 2rem;
     display: grid;
-    grid-template-columns: repeat(10, minmax(var(--size), 1fr));
+    grid-template-columns: repeat(4, minmax(var(--size), 1fr));
     gap: .2rem;
     list-style: none;
     margin: none;

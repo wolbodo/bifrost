@@ -14,7 +14,7 @@
   <input
     {...$$restProps}
     type='range'
-    {value}
+    bind:value
     on:change={onChange}
   />
 </label>

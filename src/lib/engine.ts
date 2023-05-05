@@ -24,7 +24,7 @@ export type Engine = {
 export const engine = readable<Engine>(null, (set) => {
   invoke("init_engine");
   listen<Engine>("tick", (event) => {
-    console.log(event);
+    // console.log(event);
     set(event.payload);
   });
 });

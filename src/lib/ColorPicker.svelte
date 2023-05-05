@@ -1,29 +1,38 @@
 
 <script lang='ts'>
-  import type Color from 'color'
+  import Color from 'color'
   import { createEventDispatcher } from 'svelte';
+  import Range from './Range.svelte';
 
   export let color: Color
+	let hue = color.hue()
+	let lightness = color.lightness()
+	let saturation = color.saturationl()
+
+	
   const dispatch = createEventDispatcher()
 
 	let el: HTMLElement;
 	
-	$: hue = color.hue()
-	
 	let dragstart =false
 
+	console.log({
+		hue, saturation, lightness
+	})
 
-	const change = () => {
-    dispatch('change', { value: color.rgb().array().map(v => v|0) })
-
+	$: {
+		const color = Color.hsl(hue, saturation, lightness)
+		console.log('color', color);
+		dispatch('change', { value: color.rgb().array().map(v => v|0) })
 	}
+		// dispatch('change', { value: color.rgb().array().map(v => v|0) })
+
+
 	const setHue = (x, y) => {
 		if (!el) return
 
 		const { width, height } = el.getBoundingClientRect()
-    const hue = 180 - (Math.atan2(x / width - 0.5, y / height - 0.5) / Math.PI) * 180	
-		color = color.hue(hue)
-		change()
+    hue = 180 - (Math.atan2(x / width - 0.5, y / height - 0.5) / Math.PI) * 180	
 	}
 	const onMouse = (e) => {
 		if (!dragstart) return 
@@ -42,6 +51,8 @@
 <article
 				 bind:this={el}
 				 style:--hue="{hue}deg"
+				 style:--lightness="{lightness}%"
+				 style:--saturation="{saturation}%"
 				 on:mousedown={(event) =>{dragstart = true; onMouse(event)}}
 				 on:mousemove={onMouse}
 				 on:mouseup={() => {dragstart = false}}
@@ -52,16 +63,9 @@
 	<div class='gradient' />
 	<div class='pointer' />
 </article>
-<input type=range min=0 max=100 on:change={(e => {
-	color = color.value(e.target.value)
-	change()
-})} />
-<input type=range min=0 max=100 on:change={(e => {
-	color = color.saturationv(e.target.value)
-	change()
 
-})} />
-
+<Range label="lightness" bind:value={lightness} min={0} max={100} />
+<Range label="saturation" bind:value={saturation} min={0} max={100} />
 
 <style>
 	
@@ -79,7 +83,7 @@
 	}
 	
 	.pointer {
-		background: hsl(var(--hue), 100%, 50%);
+		background: hsl(var(--hue), var(--saturation, "100%"), var(--lightness, "100%"));
 		width: var(--pointer-size);
 		height: var(--pointer-size);
 		

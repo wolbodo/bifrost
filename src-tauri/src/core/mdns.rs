@@ -6,15 +6,10 @@ use serde::Serialize;
 use std::collections::HashMap;
 use std::net::IpAddr;
 use std::net::SocketAddr;
-use std::sync::Arc;
-use std::time::Duration;
-use tauri::{async_runtime::Mutex, Window};
-
-const SERVICE_NAME: &'static str = "_e131._udp.local";
 
 pub type ServiceMap = HashMap<String, Service>;
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, Debug)]
 pub struct ServiceConfig {
     pub size: u16,
     pub universe: u16,
@@ -25,11 +20,10 @@ static SERVICE_CONFIG: phf::Map<&'static str, ServiceConfig> = phf::phf_map! {
   "dmx-lights._e131._udp.local" => ServiceConfig { size: 12, universe: 1 },
 };
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, Debug)]
 pub struct Service {
     pub name: String,
-    pub ip: IpAddr,
-    pub port: u16,
+    pub addr: Option<SocketAddr>,
     pub config: Option<ServiceConfig>,
 }
 
@@ -50,84 +44,57 @@ impl Service {
     }
 }
 
-#[tauri::command]
-pub async fn discover(
-    window: Window,
-    services: tauri::State<'_, Arc<Mutex<ServiceMap>>>,
-) -> Result<(), ()> {
-    println!("starting mdns discovery");
-    // Iterate through responses from each e131 device, asking for new devices every 15s
-    let stream = mdns::discover::all(SERVICE_NAME, Duration::from_secs(15))
-        .unwrap()
-        .listen();
-
-    pin_mut!(stream);
-
-    while let Some(Ok(response)) = stream.next().await {
-        let ptr: Vec<&String> = response
-            .records()
-            .filter_map(|record| match &record.kind {
-                RecordKind::PTR(ptr) => Some(ptr),
-                _ => None,
-            })
-            .collect();
-
-        println!("Found PTR records: {:?}", ptr);
-
-        for ptr in ptr {
-            if let Some((port, target)) = response
-                .records()
-                .filter_map(|record| {
-                    if &record.name == ptr {
-                        match record.kind {
-                            RecordKind::SRV {
-                                port, ref target, ..
-                            } => Some((port, target)),
-                            _ => None,
+fn get_ptr(response: &mdns::Response) -> Vec<&String> {
+    response
+        .records()
+        .filter_map(|record| match &record.kind {
+            RecordKind::PTR(ptr) => Some(ptr),
+            _ => None,
+        })
+        .collect()
+}
+pub fn get_services(response: &mdns::Response) -> ServiceMap {
+    response
+        .records()
+        .filter_map(|record| match &record.kind {
+            RecordKind::PTR(name) => {
+                let ptr = name.to_string();
+                let port_target = response
+                    .records()
+                    .filter_map(|record| match &record.kind {
+                        RecordKind::SRV { port, target, .. } if &record.name == name => {
+                            Some((port, target.to_string()))
                         }
+                        _ => None,
+                    })
+                    .next();
+                if let Some((port, target)) = port_target {
+                    let ip = response
+                        .records()
+                        .filter_map(|record| match record.kind {
+                            RecordKind::A(addr) if record.name == target => Some(addr.into()),
+                            RecordKind::AAAA(addr) if record.name == target => Some(addr.into()),
+                            _ => None,
+                        })
+                        .next();
+                    if let Some(ip) = ip {
+                        let config = SERVICE_CONFIG.get(&ptr).cloned();
+                        Some((
+                            target,
+                            Service {
+                                name: ptr,
+                                addr: Some(SocketAddr::new(ip, *port)),
+                                config,
+                            },
+                        ))
                     } else {
                         None
                     }
-                })
-                .next()
-            {
-                if let Some::<IpAddr>(ip) = response
-                    .records()
-                    .filter_map(|record| {
-                        if &record.name == target {
-                            match record.kind {
-                                RecordKind::A(ip) => Some(ip.into()),
-                                RecordKind::AAAA(ip) => Some(ip.into()),
-                                _ => None,
-                            }
-                        } else {
-                            None
-                        }
-                    })
-                    .next()
-                {
-                    println!("found e131 device: {} {} at {}:{}", ptr, target, ip, port);
-                    let mut services = services.lock().await;
-                    services.insert(
-                        target.to_string(),
-                        Service {
-                            name: ptr.to_string(),
-                            ip: ip,
-                            port: port,
-                            config: SERVICE_CONFIG.get(ptr.as_str()).map(|c| c.clone()),
-                        },
-                    );
+                } else {
+                    None
                 }
             }
-        }
-        {
-            let services = services.lock().await;
-
-            window
-                .emit("services", serde_json::to_value(services.clone()).unwrap())
-                .unwrap();
-        }
-    }
-
-    Ok(())
+            _ => None,
+        })
+        .collect()
 }

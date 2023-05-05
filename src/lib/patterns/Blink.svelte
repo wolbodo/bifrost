@@ -20,7 +20,7 @@
 
   const dispatch = createEventDispatcher();
 
-  $: color = Color(data.color).hex()
+  $: color = Color(data.color)
 
   const onChange = async (diff: Partial<Blink>) => {
     dispatch('change', { ...data, ...diff })
@@ -30,7 +30,7 @@
 <h2>{data.name}</h2>
 
 <ColorPicker
-  color={Color.rgb(data.color)}
+  {color}
   on:change={({ detail }) => {
     onChange({ color: detail.value })
   }}

@@ -51,7 +51,7 @@ impl Sequence {
                 if self.current >= self.patterns.len() {
                     self.current = 0;
                 }
-                self.time = 250;
+                self.time = 100;
             }
             self.patterns[self.current].tick(stage);
             self.time -= 1;

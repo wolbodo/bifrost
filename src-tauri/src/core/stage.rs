@@ -55,8 +55,6 @@ pub struct Stage {
 
 static SYNC_UNI: Option<u16> = None; // Don't want the packet to be delayed on the receiver awaiting synchronisation.
 static PRIORITY: u8 = 10; // The priority for the sending data, must be 1-200 inclusive,  None means use default.
-static DST_IP: Option<SocketAddr> = None; // Sending the data using IP multicast so don't have a destination IP.
-
 impl Stage {
     pub fn new(service: &Service) -> Stage {
         let sacn = service.get_sacn_source();
@@ -64,7 +62,7 @@ impl Stage {
             .config
             .as_ref()
             .unwrap_or(&ServiceConfig {
-                size: 0,
+                size: 1,
                 universe: 0,
             })
             .size as usize;
@@ -99,25 +97,26 @@ impl Stage {
     pub fn update(&mut self) {
         if let Some(ref mut sacn) = self.sacn {
             let mut data = vec![0];
-            data.extend(self
-                .rgb
-                .iter()
-                // .map(|color| [0, 0, color.0, color.1, color.2])
-                .map(|color| [color.0, color.1, color.2])
-                .flatten()
-                .collect::<Vec<u8>>());
+            data.extend(
+                self.rgb
+                    .iter()
+                    .map(|color| [0, 0, color.0, color.1, color.2])
+                    // .map(|color| [color.0, color.1, color.2])
+                    .flatten()
+                    .collect::<Vec<u8>>(),
+            );
             let universes: &[u16] = &[1];
-            let destination_address: SocketAddr =
-                SocketAddr::new(self.service.ip, self.service.port);
-            println!("sending to {:?}", destination_address);
-            sacn.send(
+
+            match sacn.send(
                 universes,
                 &data,
                 Some(PRIORITY),
-                Some(destination_address),
+                self.service.addr,
                 SYNC_UNI,
-            )
-            .unwrap(); // Actually send the data
+            ) {
+                Ok(_) => (),
+                Err(e) => println!("error sending: {:?}", e),
+            }
         }
     }
 }
