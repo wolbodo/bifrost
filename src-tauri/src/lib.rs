@@ -1,12 +1,16 @@
 mod core;
 
 use futures_util::{pin_mut, stream::StreamExt};
+use sacn::receive;
 use serde_json::Value;
 use tokio::sync::mpsc;
+use std::time::Instant;
 use std::{sync::Arc, time::Duration};
 use tauri::App;
 use tauri::{async_runtime::Mutex, Manager, Window};
 use tokio;
+
+use crate::core::{patterns, stage};
 
 #[cfg(mobile)]
 mod mobile;
@@ -42,6 +46,7 @@ impl AppBuilder {
             .invoke_handler(tauri::generate_handler![
                 start_engine,
                 stop_engine,
+                get_engine,
                 set_period,
 
                 discover,
@@ -55,11 +60,21 @@ impl AppBuilder {
 
             ])
             .setup(move |app| {
-                let engine = core::engine::Engine::new(app.handle());
+                let mut engine = core::engine::Engine::new(app.handle());
+                engine.add_pattern(core::patterns::Pattern::Blink(patterns::blink::Blink::new(stage::Color::RED, 5, 5)));
+
                 let services: core::mdns::ServiceMap = core::mdns::ServiceMap::new();
 
                 app.manage(Arc::new(Mutex::new(engine)));
                 app.manage(Arc::new(Mutex::new(services)));
+                
+                let (send_period, receive_period) = mpsc::channel::<Duration>(1); // create a channel to receive new interval duration
+                app.manage(send_period);
+                app.manage(Mutex::new(receive_period));
+
+                let (send_stop, receive_stop) = mpsc::channel::<StopEngine>(1); // create a channel to receive new interval duration
+                app.manage(send_stop);
+                app.manage(Mutex::new(receive_stop));
 
                 if let Some(setup) = setup {
                     (setup)(app)?;
@@ -70,6 +85,8 @@ impl AppBuilder {
             .expect("error while running tauri application");
     }
 }
+
+type StopEngine = bool;
 
 // init a background process on the command, and emit periodic events only to the window that used the command
 #[tauri::command]
@@ -84,34 +101,34 @@ fn start_engine(
         core::engine::State::Stopped => {
             engine.state = core::engine::State::Running;
 
-            let (send_period, mut receive_period) = mpsc::channel::<Duration>(1); // create a channel to receive new interval duration
-            handle.manage(send_period);
-
             // engine loop
             tauri::async_runtime::spawn(async move {
                 let mut interval = tokio::time::interval(Duration::from_millis(100));
                 let engine_mutex = handle.state::<Arc<Mutex<core::engine::Engine>>>();
-
+                let receive_period = handle.state::<Mutex<mpsc::Receiver<Duration>>>();
+                let receive_stop = handle.state::<Mutex<mpsc::Receiver<StopEngine>>>();
+                let mut receive_stop = receive_stop.lock().await;
+                let start = Instant::now();
+                println!("starting engine @{:?}", start);
                 loop {
                     tokio::select! {
                         _ = interval.tick() => {
+                            println!("tick @ {:?}", Instant::now() - start);
                             let mut engine = engine_mutex.lock().await;
                             engine.tick();
-                            println!("tick");
                             window
-                                .emit("tick", serde_json::to_value(&*engine).unwrap())
+                                .emit("tick", serde_json::to_value(&engine.stage).unwrap())
                                 .unwrap();
 
                             // check if there's a new interval duration waiting to be applied
-                            if let Ok(new_duration) = receive_period.try_recv() {
+                            if let Ok(new_duration) = receive_period.lock().await.try_recv() {
                                 interval = tokio::time::interval(new_duration); // create a new interval with the updated duration
                             }
                         }
-                    }
-                    {
-                        let engine = engine_mutex.lock().await;
-
-                        if engine.state == core::engine::State::Stopped {
+                        _ = receive_stop.recv() => {
+                            println!("stopping engine @ {:?}", Instant::now() - start);
+                            let mut engine = engine_mutex.lock().await;
+                            engine.state = core::engine::State::Stopped;
                             break;
                         }
                     }
@@ -123,22 +140,35 @@ fn start_engine(
 }
 
 #[tauri::command]
-fn stop_engine(
+async fn stop_engine(
+    stop_engine: tauri::State<'_, mpsc::Sender<StopEngine>>,
+) -> Result<(), ()> {
+    if let Ok(_) = stop_engine.send(true).await {
+        Ok(())
+    } else {
+        Err(())
+    }
+}
+
+#[tauri::command]
+fn get_engine(
     engine: tauri::State<Arc<Mutex<core::engine::Engine>>>,
-) {
-    let mut engine = engine.blocking_lock();
-    engine.state = core::engine::State::Stopped;
+) ->  Result<serde_json::Value, ()> {
+    let engine = engine.blocking_lock();
+    if let Ok(value) = serde_json::to_value(&*engine) {
+        return Ok(value)
+    }
+    return Err(())
 }
 #[tauri::command]
 fn set_period(
     period: Duration,
-    handle: tauri::AppHandle,
+    send_period: tauri::State<mpsc::Sender<Duration>>
 ) {
-    if let Some(send_period) = handle.try_state::<mpsc::Sender<Duration>>() {
-        send_period.try_send(period).unwrap();
-        println!("set period to {:?}", period);
+    if let Ok(_) = send_period.try_send(period) {
+        println!("sent period to engine");
     } else {
-        println!("no period channel");
+        println!("failed to send period to engine");
     }
 }
 

@@ -11,6 +11,10 @@
   $: if (service) {
     invoke("set_service", { service });
   }
+
+  $: {
+    console.log($stage)
+  }
 </script>
 
 <section>
@@ -42,6 +46,8 @@
     gap: .2rem;
     list-style: none;
     margin: none;
+
+    border: thin solid var(--primary-color-1);
   }
 
   li {

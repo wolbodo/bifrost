@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
-import { derived, readable } from "svelte/store";
+import { derived, readable, writable } from "svelte/store";
 
 import type { Pattern } from "./patterns/pattern";
 
@@ -22,14 +22,18 @@ export type Engine = {
 };
 
 export const engine = readable<Engine>(null, (set) => {
-  listen<Engine>("tick", (event) => {
-    console.log(event);
-    // set(event.payload);
+  invoke<Engine>("get_engine").then((engine) => {
+    console.log(engine);
+    set(engine);
+  });
+});
+export const stage = readable<Stage>(null, (set) => {
+  listen<Stage>("tick", (event) => {
+    set(event.payload);
   });
 });
 
 export const time = derived(engine, (engine) => engine?.sequence.time);
-export const stage = derived(engine, (engine) => engine?.stage);
 export const currentPattern = derived(
   engine,
   (engine) => engine?.sequence.current

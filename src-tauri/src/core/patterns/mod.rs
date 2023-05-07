@@ -1,7 +1,7 @@
-mod blink;
-mod fade;
-mod random_chase;
-mod solid;
+pub mod blink;
+pub mod fade;
+pub mod random_chase;
+pub mod solid;
 
 use erased_serde::serialize_trait_object;
 use serde::{Deserialize, Serialize};

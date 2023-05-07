@@ -19,7 +19,7 @@ pub enum State {
 pub struct Engine {
     speed: u32,
     pub sequence: Sequence,
-    stage: Option<Stage>,
+    pub stage: Option<Stage>,
     pub state: State,
 
     #[serde(skip)]
