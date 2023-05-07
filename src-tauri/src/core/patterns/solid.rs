@@ -14,10 +14,6 @@ impl Show for Solid {
             stage.set(i, self.color);
         }
     }
-
-    fn boxed_clone(&self) -> Box<dyn Show> {
-        Box::new(self.clone())
-    }
 }
 
 impl Solid {

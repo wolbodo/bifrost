@@ -1,6 +1,4 @@
 use serde::Serialize;
-use tauri::{AppHandle};
-
 use crate::core::mdns;
 use crate::core::patterns::Pattern;
 use crate::core::sequence::Sequence;
@@ -21,25 +19,10 @@ pub struct Engine {
     pub sequence: Sequence,
     pub stage: Option<Stage>,
     pub state: State,
-
-    #[serde(skip)]
-    app_handle: AppHandle,
-}
-
-impl Clone for Engine {
-    fn clone(&self) -> Self {
-        Engine {
-            speed: self.speed,
-            sequence: self.sequence.clone(),
-            stage: self.stage.clone(),
-            state: self.state.clone(),
-            app_handle: self.app_handle.clone(),
-        }
-    }
 }
 
 impl Engine {
-    pub fn new(app_handle: AppHandle) -> Engine {
+    pub fn new() -> Engine {
         Engine {
             speed: 100,
             sequence: Sequence::new(),
@@ -52,7 +35,6 @@ impl Engine {
                 }),
             })),
             state: State::Stopped,
-            app_handle,
         }
     }
 

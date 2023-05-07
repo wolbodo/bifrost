@@ -1,7 +1,6 @@
 mod core;
 
 use futures_util::{pin_mut, stream::StreamExt};
-use sacn::receive;
 use serde_json::Value;
 use tokio::sync::mpsc;
 use std::time::Instant;
@@ -60,7 +59,7 @@ impl AppBuilder {
 
             ])
             .setup(move |app| {
-                let mut engine = core::engine::Engine::new(app.handle());
+                let mut engine = core::engine::Engine::new();
                 engine.add_pattern(core::patterns::Pattern::Blink(patterns::blink::Blink::new(stage::Color::RED, 5, 5)));
 
                 let services: core::mdns::ServiceMap = core::mdns::ServiceMap::new();
@@ -113,7 +112,6 @@ fn start_engine(
                 loop {
                     tokio::select! {
                         _ = interval.tick() => {
-                            println!("tick @ {:?}", Instant::now() - start);
                             let mut engine = engine_mutex.lock().await;
                             engine.tick();
                             window
@@ -235,7 +233,7 @@ fn delete_pattern(index: usize, engine: tauri::State<Arc<Mutex<core::engine::Eng
 fn get_sequence(engine: tauri::State<Arc<Mutex<core::engine::Engine>>>) -> Value {
     let engine = engine.blocking_lock();
 
-    serde_json::to_value(engine.sequence.clone()).unwrap()
+    serde_json::to_value(&engine.sequence).unwrap()
 }
 
 #[tauri::command]

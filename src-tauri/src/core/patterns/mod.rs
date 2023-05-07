@@ -23,18 +23,8 @@ pub enum Pattern {
 
 pub trait Show: Send + Sync + erased_serde::Serialize {
     fn tick(&mut self, stage: &mut stage::Stage);
-    fn boxed_clone(&self) -> Box<dyn Show>;
-    fn clone_box(&self) -> Box<dyn Show> {
-        self.boxed_clone()
-    }
 }
 serialize_trait_object!(Show);
-
-impl Clone for Box<dyn Show> {
-    fn clone(&self) -> Self {
-        self.clone_box()
-    }
-}
 
 impl Show for Pattern {
     fn tick(&mut self, stage: &mut stage::Stage) {
@@ -43,14 +33,6 @@ impl Show for Pattern {
             Pattern::Fade(f) => f.tick(stage),
             Pattern::RandomChase(rc) => rc.tick(stage),
             Pattern::Solid(s) => s.tick(stage),
-        }
-    }
-    fn boxed_clone(&self) -> Box<dyn Show> {
-        match self {
-            Pattern::Blink(b) => Box::new(b.clone()),
-            Pattern::Fade(f) => Box::new(f.clone()),
-            Pattern::RandomChase(rc) => Box::new(rc.clone()),
-            Pattern::Solid(s) => Box::new(s.clone()),
         }
     }
 }

@@ -67,10 +67,6 @@ impl Show for Blink {
         }
         self.state = Some(state);
     }
-
-    fn boxed_clone(&self) -> Box<dyn Show> {
-        Box::new(self.clone())
-    }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -122,7 +118,4 @@ impl Show for Wave {
         }
     }
 
-    fn boxed_clone(&self) -> Box<dyn Show> {
-        Box::new(self.clone())
-    }
 }

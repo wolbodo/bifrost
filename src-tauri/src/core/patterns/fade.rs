@@ -52,7 +52,4 @@ impl Show for Fade {
 
         self.state = Some(state);
     }
-    fn boxed_clone(&self) -> Box<dyn Show> {
-        Box::new(self.clone())
-    }
 }

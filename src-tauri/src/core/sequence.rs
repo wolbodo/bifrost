@@ -11,16 +11,6 @@ pub struct Sequence {
     time: u32,
 }
 
-impl Clone for Sequence {
-    fn clone(&self) -> Self {
-        Sequence {
-            patterns: self.patterns.iter().map(|p| p.clone_box()).collect(),
-            current: self.current,
-            time: self.time,
-        }
-    }
-}
-
 impl Sequence {
     pub fn new() -> Sequence {
         Sequence {
