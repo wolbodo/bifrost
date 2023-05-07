@@ -14,12 +14,9 @@
 <main>
   <section>
     <span>Time: {$time}</span>
-  </section>
-
-  <section>
-    <button on:click={() =>{t = 500; invoke('start_timer', { duration: t})}}>Play</button>
-    <button on:click={() => { t += 500; invoke('set_timer', { duration: t})}}>up ({t})</button>
-
+    <button on:click={() => invoke('start_engine')}>▶️</button>
+    <button on:click={() => invoke('stop_engine')}>⏹️</button>
+    <button on:click={() => invoke('set_period', { period: { secs: 1, nanos: 0 }})}>🔄</button>
   </section>
 
   <Sequence />

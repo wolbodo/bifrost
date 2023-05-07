@@ -9,7 +9,7 @@ type Service = {
 };
 
 export const discovery = readable(null, (set) => {
-  invoke("discover");
+  // invoke("discover");
   listen<Record<string, Service>>("services", (event) => {
     set(event.payload);
   });

@@ -53,6 +53,17 @@ pub struct Stage {
     pub sacn: Option<SacnSource>,
 }
 
+impl Clone for Stage {
+    fn clone(&self) -> Self {
+        Stage {
+            rgb: self.rgb.clone(),
+            size: self.size,
+            service: self.service.clone(),
+            sacn: None,
+        }
+    }
+}
+
 static SYNC_UNI: Option<u16> = None; // Don't want the packet to be delayed on the receiver awaiting synchronisation.
 static PRIORITY: u8 = 10; // The priority for the sending data, must be 1-200 inclusive,  None means use default.
 impl Stage {
