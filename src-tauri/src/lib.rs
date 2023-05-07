@@ -46,7 +46,7 @@ impl AppBuilder {
                 start_engine,
                 stop_engine,
                 get_engine,
-                set_period,
+                set_bpm,
 
                 discover,
 
@@ -60,7 +60,7 @@ impl AppBuilder {
             ])
             .setup(move |app| {
                 let mut engine = core::engine::Engine::new();
-                engine.add_pattern(core::patterns::Pattern::Blink(patterns::blink::Blink::new(stage::Color::RED, 5, 5)));
+                engine.add_pattern(core::patterns::Pattern::Blink(patterns::blink::Blink::new(stage::Color::RED)));
 
                 let services: core::mdns::ServiceMap = core::mdns::ServiceMap::new();
 
@@ -102,7 +102,9 @@ fn start_engine(
 
             // engine loop
             tauri::async_runtime::spawn(async move {
-                let mut interval = tokio::time::interval(Duration::from_millis(100));
+                let BPM = 120;
+
+                let mut interval = tokio::time::interval(Duration::from_secs_f64(60.0 / (64.0 * BPM as f64)));
                 let engine_mutex = handle.state::<Arc<Mutex<core::engine::Engine>>>();
                 let receive_period = handle.state::<Mutex<mpsc::Receiver<Duration>>>();
                 let receive_stop = handle.state::<Mutex<mpsc::Receiver<StopEngine>>>();
@@ -159,11 +161,11 @@ fn get_engine(
     return Err(())
 }
 #[tauri::command]
-fn set_period(
-    period: Duration,
+fn set_bpm(
+    bpm: f32,
     send_period: tauri::State<mpsc::Sender<Duration>>
 ) {
-    if let Ok(_) = send_period.try_send(period) {
+    if let Ok(_) = send_period.try_send(Duration::from_secs_f64(60.0 / (64.0 * bpm as f64))) {
         println!("sent period to engine");
     } else {
         println!("failed to send period to engine");

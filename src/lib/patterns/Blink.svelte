@@ -4,8 +4,7 @@
   export type Blink = {
     name: "blink";
     color: TColor;
-    on_duration: number;
-    off_duration: number;
+    on: number;
   };
 
 </script>
@@ -38,15 +37,9 @@
 
 <Range
   label='on'
-  min='1'
-  max='100'
-  value={data.on_duration}
-  on:change={({ detail: { value }}) => onChange({ on_duration: Number(value) })}
-/>
-<Range
-  label='off'
-  min='1'
-  max='100'
-  value={data.off_duration}
-  on:change={({ detail: { value }}) => onChange({ off_duration: Number(value) })}
+  min='0'
+  max='1'
+  step='0.01'
+  value={data.on}
+  on:change={({ detail: { value }}) => onChange({ on: Number(value) })}
 />

@@ -22,17 +22,17 @@ pub enum Pattern {
 }
 
 pub trait Show: Send + Sync + erased_serde::Serialize {
-    fn tick(&mut self, stage: &mut stage::Stage);
+    fn tick(&mut self, progress: f32, stage: &mut stage::Stage);
 }
 serialize_trait_object!(Show);
 
 impl Show for Pattern {
-    fn tick(&mut self, stage: &mut stage::Stage) {
+    fn tick(&mut self, progress: f32, stage: &mut stage::Stage) {
         match self {
-            Pattern::Blink(b) => b.tick(stage),
-            Pattern::Fade(f) => f.tick(stage),
-            Pattern::RandomChase(rc) => rc.tick(stage),
-            Pattern::Solid(s) => s.tick(stage),
+            Pattern::Blink(b) => b.tick(progress, stage),
+            Pattern::Fade(f) => f.tick(progress, stage),
+            Pattern::RandomChase(rc) => rc.tick(progress, stage),
+            Pattern::Solid(s) => s.tick(progress, stage),
         }
     }
 }

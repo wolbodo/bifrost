@@ -16,7 +16,7 @@
     <span>Time: {$time}</span>
     <button on:click={() => invoke('start_engine')}>▶️</button>
     <button on:click={() => invoke('stop_engine')}>⏹️</button>
-    <button on:click={() => invoke('set_period', { period: { secs: 1, nanos: 0 }})}>🔄</button>
+    <button on:click={() => invoke('set_bpm', { bpm: 240 })}>🔄</button>
   </section>
 
   <Sequence />

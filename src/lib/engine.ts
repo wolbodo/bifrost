@@ -32,13 +32,23 @@ export const stage = readable<Stage>(null, (set) => {
     set(event.payload);
   });
 });
+export const sequence = (() => {
+  const update = () => invoke<Sequence>("get_sequence").then(seq.set);
+  const seq = writable<Sequence>(null, () => {
+    update();
+  });
+
+  return {
+    subscribe: seq.subscribe,
+    update,
+  };
+})();
 
 export const time = derived(engine, (engine) => engine?.sequence.time);
 export const currentPattern = derived(
   engine,
   (engine) => engine?.sequence.current
 );
-export const sequence = derived(engine, (engine) => engine?.sequence);
 export const patterns = derived(
   sequence,
   (sequence) => sequence?.patterns.map((p) => Object.values(p)[0]) || []

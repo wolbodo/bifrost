@@ -18,6 +18,7 @@
   const addPattern = (pattern: Pattern): void => {
     console.log(pattern, formatPattern(pattern))
     invoke("add_pattern", { pattern: formatPattern(pattern) })
+    sequence.update()
   }
 
   const randomColor = () => [0, 0, 0].map(() => Math.floor(Math.random() * 255))
@@ -37,8 +38,7 @@
       addPattern({
         name,
         color: randomColor(),
-        on_duration: 10,
-        off_duration: 10,
+        on: 0.5,
       } as Blink)
     } else if (name === 'fade') {
       addPattern({

@@ -35,20 +35,18 @@ impl Sequence {
         self.patterns.remove(index);
     }
     pub fn tick(&mut self, stage: &mut Stage) {
-        if !self.patterns.is_empty() {
-            if self.time == 0 {
-                self.current += 1;
-                if self.current >= self.patterns.len() {
-                    self.current = 0;
-                }
-                self.time = 100;
-            }
-            self.patterns[self.current].tick(stage);
-            self.time -= 1;
-        } else {
-            for i in 0..stage.size {
-                stage.set(i, Color(0, 0, 0));
-            }
+        if self.patterns.is_empty() { return }
+
+        self.time += 1;
+
+        if self.time % 64 == 0 {
+            self.current = (self.current + 1) % self.patterns.len();
+            println!("current: {}", self.current);
+        }
+        if let Some(pattern) = self.patterns.get_mut(self.current) {
+            let progress: f32 = (self.time % 64) as f32 / 64.0;
+            
+            pattern.tick(progress, stage);
         }
     }
 }

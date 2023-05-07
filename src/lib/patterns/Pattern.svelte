@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { patterns } from '../engine';
+  import { patterns, sequence } from '../engine';
   import { invoke } from '@tauri-apps/api';
 
   import { debounce } from '../util';
@@ -14,7 +14,13 @@
     await invoke("edit_pattern",
       { index: $selected, pattern: formatPattern(detail) }
     )
+    sequence.update()
   }, 100)
+
+  const deletePattern = () => {
+    invoke('delete_pattern', { index: $selected })
+    sequence.update()
+  }
 </script>
 
 {#if pattern}
@@ -25,7 +31,7 @@
       data={pattern}
     />
     
-    <button on:click={() => invoke('delete_pattern', { index: $selected })}>Delete</button>
+    <button on:click={deletePattern}>Delete</button>
   </section>
 {/if}
 

@@ -51,7 +51,7 @@ impl RandomChase {
 }
 
 impl Show for RandomChase {
-    fn tick(&mut self, stage: &mut stage::Stage) {
+    fn tick(&mut self, progress: f32, stage: &mut stage::Stage) {
         let mut rng = rand::thread_rng();
         if self.state.is_none() {
             self.state = Some(State::new());
