@@ -13,7 +13,8 @@
   "dependencies": {
     "@tauri-apps/api": "2.0.0-alpha.3",
     "@tauri-apps/cli": "2.0.0-alpha.8",
-    "color": "^4.2.3"
+    "color": "^4.2.3",
+    "svelte-dnd-action": "^0.9.22"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.1.1",

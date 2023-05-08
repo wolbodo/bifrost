@@ -1,10 +1,17 @@
 <script lang='ts' context='module'>
-  import type { Color as TColor } from "../type";
+  import {type Color as TColor, randomColor } from "../type";
+  import { Base } from './type'
 
-  export type Blink = {
-    name: "blink";
+  export class Blink extends Base {
+    name = "blink" as const;
     color: TColor;
     on: number;
+
+    constructor(color?: TColor, on = 0.5) {
+      super()
+      this.color = color ?? randomColor()
+      this.on = on
+    }
   };
 
 </script>

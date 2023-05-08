@@ -1,10 +1,17 @@
 <script lang='ts' context='module'>
-  import type { Color as TColor } from "../type";
+  import {type Color as TColor, randomColor } from "../type";
+  import { Base } from './type'
 
-  export type Fade = {
-    name: "fade";
+  export class Fade extends Base {
+    name = "fade" as const;
     color: TColor;
     duration: number;
+
+    constructor(color?: TColor, duration = 1) {
+      super()
+      this.color = color ?? randomColor()
+      this.duration = duration
+    }
   };
 </script>
 

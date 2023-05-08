@@ -1,16 +1,22 @@
 <script lang='ts' context='module'>
   import Color from 'color'
+  import {type Color as TColor, randomColor } from "../type";
 
-  export type Solid = {
-    name: "solid";
+  import { Base } from './type'
+
+  export class Solid extends Base {
+    name = "solid" as const;
     color: TColor;
-    on_duration: number;
-    off_duration: number;
+
+    constructor(color?: TColor) {
+      super()
+      this.color = color ?? randomColor()
+    }
   };
+
 </script>
 
 <script lang=ts>
-  import type { Color as TColor } from "../type";
   import { createEventDispatcher } from 'svelte';
   import ColorPicker from '../ColorPicker.svelte';
 
