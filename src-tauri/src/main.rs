@@ -25,8 +25,10 @@ fn main() {
             discover,
 
             add_pattern,
-            edit_pattern,
+            set_pattern,
             delete_pattern,
+
+            set_track,
 
             get_sequence,
             set_service,
@@ -34,7 +36,7 @@ fn main() {
         ])
         .setup(move |app| {
             let mut engine = core::engine::Engine::new();
-            engine.add_pattern(core::patterns::Pattern::Blink(patterns::blink::Blink::new(stage::Color::RED)));
+            engine.sequence.add_pattern(core::patterns::Pattern::Blink(patterns::blink::Blink::new(stage::Color::RED)));
 
             let services: core::mdns::ServiceMap = core::mdns::ServiceMap::new();
 
@@ -182,23 +184,32 @@ fn add_pattern(
     engine: tauri::State<Arc<Mutex<core::engine::Engine>>>,
 ) {
     println!("add_pattern: {:?}", pattern);
-    engine.blocking_lock().add_pattern(pattern);
+    engine.blocking_lock().sequence.add_pattern(pattern);
 }
 
 #[tauri::command]
-fn edit_pattern(
+fn set_pattern(
     index: usize,
     pattern: core::patterns::Pattern,
     engine: tauri::State<Arc<Mutex<core::engine::Engine>>>,
 ) {
-    println!("edit_pattern({:?}) {:?}", index, pattern);
-    engine.blocking_lock().edit_pattern(index, pattern);
+    println!("set_pattern({:?}) {:?}", index, pattern);
+    engine.blocking_lock().sequence.set_pattern(index, pattern);
+}
+
+#[tauri::command]
+fn set_track(
+    track: Vec<core::sequence::Slot>,
+    engine: tauri::State<Arc<Mutex<core::engine::Engine>>>,
+) {
+    println!("set_track({:?})", track);
+    engine.blocking_lock().sequence.set_track(track);
 }
 
 #[tauri::command]
 fn delete_pattern(index: usize, engine: tauri::State<Arc<Mutex<core::engine::Engine>>>) {
     println!("delete_pattern: {:?}", index);
-    engine.blocking_lock().delete_pattern(index);
+    engine.blocking_lock().sequence.delete_pattern(&index);
 }
 
 #[tauri::command]

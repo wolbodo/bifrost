@@ -1,13 +1,12 @@
 use std::collections::HashMap;
 
-use serde::Serialize;
-// use serde_traitobject::{Arc, Serialize};
+use serde::{Serialize, Deserialize};
 
 use crate::core::patterns::{Pattern, Show};
-use crate::core::stage::{Color, Stage};
+use crate::core::stage::{Stage};
 
-#[derive(Serialize, Debug)]
-struct Slot {
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Slot {
     id: usize,
     width: usize,
 }
@@ -43,13 +42,17 @@ impl Sequence {
             width: 1,
         });
     }
-    pub fn edit_pattern(&mut self, index: usize, pattern: Pattern) {
+    pub fn set_pattern(&mut self, index: usize, pattern: Pattern) {
         self.patterns.insert(index, pattern);
     }
     pub fn delete_pattern(&mut self, index: &usize) {
         self.patterns.remove(index);
         self.track.retain(|slot| slot.id != *index);
     }
+    pub fn set_track(&mut self, track: Vec<Slot>) {
+        self.track = track;
+    }
+
     fn loop_time(&self) -> usize {
         self.track.iter()
             .scan(0, |acc, slot| {

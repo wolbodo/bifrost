@@ -8,6 +8,7 @@
   import { sequence } from "./engine";
   import { addPattern, isPatternName } from "./patterns/pattern";
   import Track from "./Track.svelte";
+  import { invoke } from "@tauri-apps/api";
 
   const select = (index) => $selected = index;
   const onChange = (e) => {
@@ -19,12 +20,8 @@
     addPattern(name)
   }
 
-  // $: patterns = $sequence.track.map(({ pattern_id }) => $sequence.patterns[pattern_id]);
+  
 </script>
-
-<pre>
-  {JSON.stringify($sequence, null, 2)}
-</pre>
 
 <div>
   <select on:change={onChange}>
@@ -35,7 +32,11 @@
   </select>
 
   {#if $sequence}
-    <Track items={$sequence.track} let:item>
+    <Track items={$sequence.track} let:item on:change={({ detail: items }) => {
+      console.log('track', items)
+      invoke('set_track', { track: items })
+      sequence.update()
+    }}>
       <span>{item.id}</span>
     </Track>
   {/if}

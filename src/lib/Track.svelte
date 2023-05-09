@@ -1,9 +1,10 @@
 <script lang='ts'>
-  import { flip } from 'svelte/animate';
+  import { createEventDispatcher } from 'svelte';
   import { dndzone, SOURCES, TRIGGERS	 } from 'svelte-dnd-action';
-  
+  import TrackItem from './TrackItem.svelte';
+
+  const dispatch = createEventDispatcher();
   const GRID_SPACING = 16;
-  const flipDurationMs = 300;
 
   interface ItemInterface {
     id: number | string;
@@ -21,11 +22,6 @@
   let dragDisabled = true
   let element: HTMLElement;
 
-  // Options for the observer (which mutations to observe)
-  const config = { attributes: true, childList: true, subtree: true };
-
-  $: if (element) observer.observe(element, config)
-
   function handleConsider(e) {
     const {items: newItems, info: {source, trigger}} = e.detail;
     items = newItems;
@@ -41,6 +37,8 @@
     if (source === SOURCES.POINTER) {
       dragDisabled = true;
     }
+
+    dispatch('change', items)
   }
 
   let overResizeHandle = false
@@ -64,68 +62,50 @@
   function handleKeyDown(e) {
     if ((e.key === "Enter" || e.key === " ") && dragDisabled) dragDisabled = false;
   }
-
-  const observer = new MutationObserver((mutationList) => {
-    for (const { target, type } of mutationList) {
+  const observer = new ResizeObserver((elements) => {
+    for (const { target } of elements) {
       if (!(target instanceof HTMLElement)) continue;
-
-      if (type === 'attributes' && Boolean(target.style.width)) {
-        const itemId = Array.from(element.childNodes).indexOf(target);
+      
+      if (Boolean(target.style.width)) {
+        const itemId = Array.from(element.children).indexOf(target);
         const item = items[itemId];
+        console.log(itemId, item)
         if (!item) continue;
         
-        item.width = parseInt(target.style.width) / GRID_SPACING |0;
+        let width = parseInt(target.style.width) / GRID_SPACING |0;
+        if (width !== item.width) {
+          item.width = width;
+          dispatch('change', items)
+          items = items;
+        }
         target.style.width = '';
-        console.log(item)
-        
-        items = items;
       }
     }
   })
-
 </script>
 
 <article
   bind:this={element}
-  use:dndzone={{items, flipDurationMs, dragDisabled}}
+  use:dndzone={{items, dragDisabled}}
   on:consider={handleConsider}
   on:finalize={handleFinalize}
 >
   {#each items as item (item.id)}
-    <section 
-      animate:flip="{{ duration: flipDurationMs }}"
-      style:grid-column="span {item.width}"
-      aria-label="drag-handle"
-      class="handle" 
-      style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
-      on:mousemove={mouseMove}
-      on:mousedown={startDrag}
-      on:touchstart={startDrag}
-      on:keydown={handleKeyDown}
-    >
+    <TrackItem bind:width={item.width} {observer} {mouseMove} {startDrag} {handleKeyDown}>
       <slot item={item} />
-    </section>
+    </TrackItem>
   {/each}
 </article>
 
 <style>
   article {
     display: grid;
-    grid: 1fr / repeat(auto-fill, 1rem);
+    grid: 1fr / repeat(auto-fill, 1.5rem);
     gap: 0.2rem;
     padding: 0.2rem;
 
     border: thin solid black;
 
     height: 2rem
-  }
-  section {
-    box-sizing: border-box;
-    border: thin solid blue;
-    text-align: center;
-    line-height: 2rem;
-
-    overflow: hidden;
-    resize: horizontal;
   }
 </style>
