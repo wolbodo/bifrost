@@ -51,7 +51,7 @@ impl Engine {
         self.sequence.edit_pattern(index, pattern);
     }
     pub fn delete_pattern(&mut self, index: usize) {
-        self.sequence.delete_pattern(index);
+        self.sequence.delete_pattern(&index);
     }
     pub fn tick(&mut self) {
         if let Some(ref mut stage) = self.stage {

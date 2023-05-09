@@ -4,8 +4,20 @@
   
   const GRID_SPACING = 16;
   const flipDurationMs = 300;
+
+  interface ItemInterface {
+    id: number | string;
+    width: number;
+  }
+  type Item = $$Generic<ItemInterface>
   
-  let items = Array(3).fill(null).map((_, id) => ({ width: 1, id }))
+  interface $$Slots {
+    default: {
+      item: Item
+    }
+  }
+
+  export let items: Item[] = []
   let dragDisabled = true
   let element: HTMLElement;
 
@@ -64,6 +76,7 @@
         
         item.width = parseInt(target.style.width) / GRID_SPACING |0;
         target.style.width = '';
+        console.log(item)
         
         items = items;
       }
@@ -72,7 +85,12 @@
 
 </script>
 
-<article bind:this={element} use:dndzone={{items, flipDurationMs, dragDisabled}} on:consider={handleConsider} on:finalize={handleFinalize}>
+<article
+  bind:this={element}
+  use:dndzone={{items, flipDurationMs, dragDisabled}}
+  on:consider={handleConsider}
+  on:finalize={handleFinalize}
+>
   {#each items as item (item.id)}
     <section 
       animate:flip="{{ duration: flipDurationMs }}"
@@ -85,8 +103,7 @@
       on:touchstart={startDrag}
       on:keydown={handleKeyDown}
     >
-      {item.id}
-      <span />
+      <slot item={item} />
     </section>
   {/each}
 </article>

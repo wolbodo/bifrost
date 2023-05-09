@@ -5,8 +5,11 @@ import { derived, readable, writable } from "svelte/store";
 import type { Pattern } from "./patterns/pattern";
 
 export type Sequence = {
-  current: number;
-  patterns: { [key: string]: Pattern }[];
+  patterns: { [id: string]: Pattern }[];
+  track: {
+    id: number;
+    width: number;
+  }[];
   time: number;
 };
 
@@ -48,8 +51,4 @@ export const time = derived(engine, (engine) => engine?.sequence.time);
 export const currentPattern = derived(
   engine,
   (engine) => engine?.sequence.current
-);
-export const patterns = derived(
-  sequence,
-  (sequence) => sequence?.patterns.map((p) => Object.values(p)[0]) || []
 );

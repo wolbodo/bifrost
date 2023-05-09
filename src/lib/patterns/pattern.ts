@@ -25,7 +25,7 @@ type PatternMap = {
 type PatternTypes = {
   [K in keyof PatternMap]: InstanceType<PatternMap[K]>;
 };
-type Pattern = PatternTypes[keyof Patterns];
+export type Pattern = PatternTypes[keyof Patterns];
 
 export const isPatternName = (name: string): name is keyof Patterns =>
   name in patterns;
@@ -39,17 +39,21 @@ const getPatternClass = (name: keyof Patterns): PatternMap[keyof Patterns] => {
 export const formatPattern = (
   pattern: Pattern
 ): { [name: string]: Pattern } => {
-  const component = patterns[pattern.name].default;
+  const module = patterns[pattern.name];
 
-  if (!component) {
+  if (!module) {
     throw new Error("Unknown pattern");
   }
-  const [, name] = component.name.match(new RegExp("Proxy<(.*)>"));
+
+  const [name] = Object.entries(module).find(
+    ([, cls]) => cls.prototype instanceof Base
+  );
   return {
     [name]: pattern,
   };
 };
-export const getComponent = (pattern: Pattern) => {
+export const getComponent = (_pattern: { [name: string]: Pattern }) => {
+  const pattern = Object.values(_pattern)[0];
   const component = patterns[pattern.name].default;
 
   if (!component) {
@@ -64,5 +68,4 @@ export const addPattern = (name: keyof PatternMap) => {
 
   invoke("add_pattern", { pattern: formatPattern(pattern) });
   sequence.update();
-  // return new
 };

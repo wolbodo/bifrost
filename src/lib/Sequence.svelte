@@ -5,18 +5,11 @@
 </script>
 
 <script lang="ts">
-  import { sequence, patterns } from "./engine";
-  // import { invoke } from "@tauri-apps/api";
+  import { sequence } from "./engine";
   import { addPattern, isPatternName } from "./patterns/pattern";
-  // import type { Solid} from "./patterns/Solid.svelte";
-  // import type { Blink } from "./patterns/Blink.svelte";
-  // import type { Fade } from "./patterns/Fade.svelte";
-  // import type { RandomChase } from "./patterns/RandomChase.svelte";
+  import Track from "./Track.svelte";
 
   const select = (index) => $selected = index;
-
-
-
   const onChange = (e) => {
     const name: string = e.target.value;
     const reset = e.target.value = e.target.options[0].value
@@ -24,52 +17,30 @@
     if (!isPatternName(name)) return;
 
     addPattern(name)
-
-
-
-    // if (name === 'solid') {
-    //   addPattern({
-    //     name,
-    //     color: randomColor(),
-    //   } as Solid)
-    // } else if (name === 'blink') {
-    //   addPattern({
-    //     name,
-    //     color: randomColor(),
-    //     on: 0.5,
-    //   } as Blink)
-    // } else if (name === 'fade') {
-    //   addPattern({
-    //     name,
-    //     color: randomColor(),
-    //     duration: 500,
-    //   } as Fade)
-    // } else if (name === 'random_chase') {
-    //   addPattern({
-    //     name,
-    //     color: randomColor(),
-    //     randomness: 0,
-    //     speed: 10,
-    //     steps: 4,
-    //   } as RandomChase)
-    // } else {
-    //   throw new Error(`Unknown pattern name: ${name}`)
-    // }
-    
   }
 
+  // $: patterns = $sequence.track.map(({ pattern_id }) => $sequence.patterns[pattern_id]);
 </script>
 
-<div>
+<pre>
+  {JSON.stringify($sequence, null, 2)}
+</pre>
 
+<div>
   <select on:change={onChange}>
     <option>Add +</option>
     {#each ['solid', 'blink', 'fade', 'random_chase'] as name}
     <option>{name}</option>
     {/each}
   </select>
+
+  {#if $sequence}
+    <Track items={$sequence.track} let:item>
+      <span>{item.id}</span>
+    </Track>
+  {/if}
   
-  <section>
+  <!-- <section>
     {#each $patterns || [] as pattern, index}
     <button
     class:current={$sequence.current === index}
@@ -79,8 +50,7 @@
       {pattern.name}
     </button>
     {/each}
-    
-  </section>
+  </section> -->
 </div>
 
 <style>
