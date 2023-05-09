@@ -12,12 +12,12 @@
 </script>
 
 <main>
-  <section>
+  <header>
     <span>Time: {$time}</span>
     <button on:click={() => invoke('start_engine')}>▶️</button>
     <button on:click={() => invoke('stop_engine')}>⏹️</button>
     <button on:click={() => invoke('set_bpm', { bpm: 240 })}>🔄</button>
-  </section>
+  </header>
 
   <Sequence />
   <Pattern />
@@ -37,14 +37,22 @@
       "debug debug";
   }
 
-  section {
+  header {
+    grid-area: header;
+    grid: 2.5rem / auto repeat(3, min-content);
+    gap: .5rem;
     display: grid;
-    grid-template-columns: auto min-content;
+  }
+  header span {
+    display: inline-block;
   }
 
-  select {
-    font-size: 1rem;
+  header button {
+    aspect-ratio: 1;
+    width: 2rem;
+    padding: 0;
   }
+
 
   pre {
     grid-area: debug;
