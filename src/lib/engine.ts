@@ -36,7 +36,11 @@ export const stage = readable<Stage>(null, (set) => {
   });
 });
 export const sequence = (() => {
-  const update = () => invoke<Sequence>("get_sequence").then(seq.set);
+  const update = () =>
+    invoke<Sequence>("get_sequence").then((s) => {
+      console.log("new sequence", s);
+      seq.set(s);
+    });
   const seq = writable<Sequence>(null, () => {
     update();
   });

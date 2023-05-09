@@ -12,9 +12,6 @@
     invoke("set_service", { service });
   }
 
-  $: {
-    console.log($stage)
-  }
 </script>
 
 <section>

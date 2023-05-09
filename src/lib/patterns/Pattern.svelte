@@ -5,14 +5,15 @@
   import { debounce } from '../util';
 
   import { selected } from '../Sequence.svelte'
-  import { type Pattern, getComponent, formatPattern } from './pattern';
+  import { type Pattern, getComponent, packPattern, unpackPattern } from './pattern';
 
-  $: pattern = $sequence? $sequence.patterns[$selected] : null as Pattern
+  $: selectedPattern = $sequence && $sequence.patterns[$selected]
+  $: ([, pattern] = selectedPattern ? unpackPattern(selectedPattern) : [])
 
   const apply = debounce(async ({ detail }) => {
     console.log("apply", detail)
-    await invoke("edit_pattern",
-      { index: $selected, pattern: formatPattern(detail) }
+    await invoke("set_pattern",
+      { index: $selected, pattern: packPattern(detail) }
     )
     sequence.update()
   }, 100)
@@ -21,6 +22,8 @@
     invoke('delete_pattern', { index: $selected })
     sequence.update()
   }
+
+  $: { console.log('pattern', pattern)}
 </script>
 
 {#if pattern}

@@ -6,7 +6,7 @@
 
 <script lang="ts">
   import { sequence } from "./engine";
-  import { addPattern, isPatternName } from "./patterns/pattern";
+  import { addPattern, isPatternName, unpackPattern } from "./patterns/pattern";
   import Track from "./Track.svelte";
   import { invoke } from "@tauri-apps/api";
 
@@ -19,6 +19,8 @@
 
     addPattern(name)
   }
+
+
 
   
 </script>
@@ -37,7 +39,8 @@
       invoke('set_track', { track: items })
       sequence.update()
     }}>
-      <span>{item.id}</span>
+      {@const [name, pattern] = unpackPattern($sequence.patterns[item.id])}
+      <span class:selected={$selected === item.id} on:click|preventDefault={() => {$selected = item.id}}>{name}</span>
     </Track>
   {/if}
   

@@ -1,6 +1,6 @@
 <script lang='ts'>
   import { createEventDispatcher } from 'svelte';
-  import { dndzone, SOURCES, TRIGGERS	 } from 'svelte-dnd-action';
+  import { dndzone, SOURCES, TRIGGERS, SHADOW_PLACEHOLDER_ITEM_ID	 } from 'svelte-dnd-action';
   import TrackItem from './TrackItem.svelte';
 
   const dispatch = createEventDispatcher();
@@ -72,7 +72,7 @@
         console.log(itemId, item)
         if (!item) continue;
         
-        let width = parseInt(target.style.width) / GRID_SPACING |0;
+        let width = parseInt(target.style.width) / GRID_SPACING |0 || 1;
         if (width !== item.width) {
           item.width = width;
           dispatch('change', items)
@@ -82,6 +82,8 @@
       }
     }
   })
+
+  $: console.log(items)
 </script>
 
 <article
@@ -92,7 +94,11 @@
 >
   {#each items as item (item.id)}
     <TrackItem bind:width={item.width} {observer} {mouseMove} {startDrag} {handleKeyDown}>
-      <slot item={item} />
+      {#if item.id === SHADOW_PLACEHOLDER_ITEM_ID}
+        <div class="placeholder" />
+      {:else}
+        <slot item={item} />
+      {/if}
     </TrackItem>
   {/each}
 </article>
@@ -104,7 +110,7 @@
     gap: 0.2rem;
     padding: 0.2rem;
 
-    border: thin solid black;
+    border: thin solid var(--primary-1);
 
     height: 2rem
   }

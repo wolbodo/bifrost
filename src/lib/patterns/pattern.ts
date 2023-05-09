@@ -36,9 +36,7 @@ const getPatternClass = (name: keyof Patterns): PatternMap[keyof Patterns] => {
   );
 };
 
-export const formatPattern = (
-  pattern: Pattern
-): { [name: string]: Pattern } => {
+export const packPattern = (pattern: Pattern): { [name: string]: Pattern } => {
   const module = patterns[pattern.name];
 
   if (!module) {
@@ -52,8 +50,13 @@ export const formatPattern = (
     [name]: pattern,
   };
 };
-export const getComponent = (_pattern: { [name: string]: Pattern }) => {
-  const pattern = Object.values(_pattern)[0];
+export const unpackPattern = (packed: {
+  [name: string]: Pattern;
+}): [name: string, pattern: Pattern] => {
+  const [name, pattern] = Object.entries(packed)[0];
+  return [name, pattern];
+};
+export const getComponent = (pattern: Pattern) => {
   const component = patterns[pattern.name].default;
 
   if (!component) {
@@ -66,6 +69,6 @@ export const addPattern = (name: keyof PatternMap) => {
   const Cls = getPatternClass(name);
   const pattern = new Cls();
 
-  invoke("add_pattern", { pattern: formatPattern(pattern) });
+  invoke("add_pattern", { pattern: packPattern(pattern) });
   sequence.update();
 };

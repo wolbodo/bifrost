@@ -27,7 +27,7 @@
   on:mousedown={startDrag}
   on:touchstart={startDrag}
   on:keydown={handleKeyDown}
->
+  >
   <slot />
 </section>
 
@@ -36,7 +36,7 @@
 section {
     grid-column-end: auto;
     box-sizing: border-box;
-    border: thin solid blue;
+    background: var(--primary-2);
     text-align: center;
     line-height: 2rem;
 
