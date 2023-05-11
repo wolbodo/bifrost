@@ -6,11 +6,13 @@
     name = "fade" as const;
     color: TColor;
     duration: number;
+    fade_out: boolean;
 
     constructor(color?: TColor, duration = 1) {
       super()
       this.color = color ?? randomColor()
       this.duration = duration
+      this.fade_out = false
     }
   };
 </script>
@@ -50,6 +52,10 @@
       onChange({ duration: Number(detail.value) })
     }}
   />
+
+  <label>Fade out<input type='checkbox' checked={data.fade_out} on:change={({ target }) => {
+    onChange({ fade_out: target.checked })
+  }}/></label>
 
 <style>
   input {

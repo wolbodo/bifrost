@@ -2,47 +2,43 @@ mod core;
 
 use futures_util::{pin_mut, stream::StreamExt};
 use serde_json::Value;
-use tokio::sync::mpsc;
 use std::time::Instant;
 use std::{sync::Arc, time::Duration};
 use tauri::App;
 use tauri::{async_runtime::Mutex, Manager, Window};
 use tokio;
+use tokio::sync::mpsc;
 
 use crate::core::{patterns, stage};
 
 const SERVICE_NAME: &'static str = "_e131._udp.local";
 
 fn main() {
-
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             start_engine,
             stop_engine,
             get_engine,
             set_bpm,
-
             discover,
-
             add_pattern,
             set_pattern,
             delete_pattern,
-
             set_track,
-
             get_sequence,
             set_service,
-
         ])
         .setup(move |app| {
             let mut engine = core::engine::Engine::new();
-            engine.sequence.add_pattern(core::patterns::Pattern::Blink(patterns::blink::Blink::new(stage::Color::RED)));
+            engine.sequence.add_pattern(core::patterns::Pattern::Blink(
+                patterns::blink::Blink::new(stage::Color::RED),
+            ));
 
             let services: core::mdns::ServiceMap = core::mdns::ServiceMap::new();
 
             app.manage(Arc::new(Mutex::new(engine)));
             app.manage(Arc::new(Mutex::new(services)));
-            
+
             let (send_period, receive_period) = mpsc::channel::<Duration>(1); // create a channel to receive new interval duration
             app.manage(send_period);
             app.manage(Mutex::new(receive_period));
@@ -76,7 +72,8 @@ fn start_engine(
             tauri::async_runtime::spawn(async move {
                 let BPM = 120;
 
-                let mut interval = tokio::time::interval(Duration::from_secs_f64(60.0 / (64.0 * BPM as f64)));
+                let mut interval =
+                    tokio::time::interval(Duration::from_secs_f64(60.0 / (64.0 * BPM as f64)));
                 let engine_mutex = handle.state::<Arc<Mutex<core::engine::Engine>>>();
                 let receive_period = handle.state::<Mutex<mpsc::Receiver<Duration>>>();
                 let receive_stop = handle.state::<Mutex<mpsc::Receiver<StopEngine>>>();
@@ -112,9 +109,7 @@ fn start_engine(
 }
 
 #[tauri::command]
-async fn stop_engine(
-    stop_engine: tauri::State<'_, mpsc::Sender<StopEngine>>,
-) -> Result<(), ()> {
+async fn stop_engine(stop_engine: tauri::State<'_, mpsc::Sender<StopEngine>>) -> Result<(), ()> {
     if let Ok(_) = stop_engine.send(true).await {
         Ok(())
     } else {
@@ -125,18 +120,15 @@ async fn stop_engine(
 #[tauri::command]
 fn get_engine(
     engine: tauri::State<Arc<Mutex<core::engine::Engine>>>,
-) ->  Result<serde_json::Value, ()> {
+) -> Result<serde_json::Value, ()> {
     let engine = engine.blocking_lock();
     if let Ok(value) = serde_json::to_value(&*engine) {
-        return Ok(value)
+        return Ok(value);
     }
-    return Err(())
+    return Err(());
 }
 #[tauri::command]
-fn set_bpm(
-    bpm: f32,
-    send_period: tauri::State<mpsc::Sender<Duration>>
-) {
+fn set_bpm(bpm: f32, send_period: tauri::State<mpsc::Sender<Duration>>) {
     if let Ok(_) = send_period.try_send(Duration::from_secs_f64(60.0 / (64.0 * bpm as f64))) {
         println!("sent period to engine");
     } else {
@@ -237,7 +229,7 @@ fn set_service(
 // fn start_timer(timer: tauri::State<Arc<Mutex<core::timer::Timer>>>, duration: u64) {
 //     let mut timer = timer.blocking_lock();
 //     let mut time = 0;
-//     timer.start(Duration::from_millis(duration), async { 
+//     timer.start(Duration::from_millis(duration), async {
 //         time += 1;
 //         println!("Tick {:?}ms", time);
 //     });

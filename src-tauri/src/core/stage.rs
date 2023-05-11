@@ -4,7 +4,7 @@ use sacn::source::SacnSource;
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 
-use super::mdns::{Service, ServiceConfig};
+use super::mdns::{RGBLayout, Service, ServiceConfig};
 
 #[derive(Serialize, Deserialize, Clone, Debug, Copy)]
 pub struct Color(pub u8, pub u8, pub u8);
@@ -69,14 +69,7 @@ static PRIORITY: u8 = 10; // The priority for the sending data, must be 1-200 in
 impl Stage {
     pub fn new(service: &Service) -> Stage {
         let sacn = service.get_sacn_source();
-        let size = service
-            .config
-            .as_ref()
-            .unwrap_or(&ServiceConfig {
-                size: 1,
-                universe: 0,
-            })
-            .size as usize;
+        let size = service.config.size as usize;
 
         Stage {
             rgb: vec![Color(0, 0, 0); size],
@@ -111,8 +104,7 @@ impl Stage {
             data.extend(
                 self.rgb
                     .iter()
-                    .map(|color| [0, 0, color.0, color.1, color.2])
-                    // .map(|color| [color.0, color.1, color.2])
+                    .map(|color| self.service.layout_color(color))
                     .flatten()
                     .collect::<Vec<u8>>(),
             );
@@ -125,7 +117,7 @@ impl Stage {
                 self.service.addr,
                 SYNC_UNI,
             ) {
-                Ok(_) => (),
+                Ok(_) => (print!(".")),
                 Err(e) => println!("error sending: {:?}", e),
             }
         }

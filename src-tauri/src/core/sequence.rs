@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::core::patterns::{Pattern, Show};
-use crate::core::stage::{Stage};
+use crate::core::stage::Stage;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Slot {
@@ -37,10 +37,7 @@ impl Sequence {
         let id = self.id_counter;
         self.id_counter += 1;
         self.patterns.insert(id, pattern);
-        self.track.push(Slot {
-            id,
-            width: 1,
-        });
+        self.track.push(Slot { id, width: 1 });
     }
     pub fn set_pattern(&mut self, index: usize, pattern: Pattern) {
         self.patterns.insert(index, pattern);
@@ -54,7 +51,8 @@ impl Sequence {
     }
 
     fn loop_time(&self) -> usize {
-        self.track.iter()
+        self.track
+            .iter()
             .scan(0, |acc, slot| {
                 *acc += slot.width * SLOT_SIZE as usize;
                 Some(*acc)
@@ -64,16 +62,25 @@ impl Sequence {
     }
     fn current(&self) -> Option<(usize, usize)> {
         let time = self.time % self.loop_time() as u32;
-        self.track.iter()
+        self.track
+            .iter()
             .enumerate()
             .scan((0_usize, 0_usize), |acc, (i, slot)| {
                 *acc = (i, acc.1 + (slot.width * SLOT_SIZE as usize));
                 Some(*acc)
             })
-            .find_map(|(i, sum)| if sum as u32 >= time { Some((i, sum)) } else { None })
+            .find_map(|(i, sum)| {
+                if sum as u32 >= time {
+                    Some((i, sum))
+                } else {
+                    None
+                }
+            })
     }
     pub fn tick(&mut self, stage: &mut Stage) {
-        if self.patterns.is_empty() { return }
+        if self.patterns.is_empty() {
+            return;
+        }
 
         self.time += 1;
         let lt = self.loop_time();
@@ -83,7 +90,7 @@ impl Sequence {
             if let Some(current) = self.track.get(current_index) {
                 if let Some(pattern) = self.patterns.get_mut(&current.id) {
                     let pattern_duration = current.width * SLOT_SIZE as usize;
-                    let time_in_pattern = self.time - (time_passed - pattern_duration ) as u32;
+                    let time_in_pattern = self.time - (time_passed - pattern_duration) as u32;
                     let progress = time_in_pattern as f32 / pattern_duration as f32;
 
                     pattern.tick(progress, stage);

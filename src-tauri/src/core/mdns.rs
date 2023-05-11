@@ -6,40 +6,53 @@ use std::collections::HashMap;
 use std::net::IpAddr;
 use std::net::SocketAddr;
 
+use super::stage::Color;
+
 pub type ServiceMap = HashMap<String, Service>;
+
+#[derive(Serialize, Clone, Debug)]
+pub enum RGBLayout {
+    RGB,
+    RGBPar,
+}
 
 #[derive(Serialize, Clone, Debug)]
 pub struct ServiceConfig {
     pub size: u16,
     pub universe: u16,
+    layout: RGBLayout,
 }
 
-static SERVICE_CONFIG: phf::Map<&'static str, ServiceConfig> = phf::phf_map! {
-  "bifrost-demo._e131._udp.local" => ServiceConfig { size: 50, universe: 1 },
-  "dmx-lights._e131._udp.local" => ServiceConfig { size: 12, universe: 1 },
+pub static SERVICE_CONFIG: phf::Map<&'static str, ServiceConfig> = phf::phf_map! {
+  "bifrost-demo._e131._udp.local" => ServiceConfig { size: 64, universe: 1, layout: RGBLayout::RGB },
+  "dmx-lights._e131._udp.local" => ServiceConfig { size: 12, universe: 1, layout: RGBLayout::RGBPar },
 };
 
 #[derive(Serialize, Clone, Debug)]
 pub struct Service {
     pub name: String,
     pub addr: Option<SocketAddr>,
-    pub config: Option<ServiceConfig>,
+    pub config: ServiceConfig,
 }
 
 impl Service {
     pub fn get_sacn_source(&self) -> Option<SacnSource> {
-        if let Some(ref config) = self.config {
-            let local_addr: SocketAddr = SocketAddr::new(
-                IpAddr::V4("0.0.0.0".parse().unwrap()),
-                ACN_SDT_MULTICAST_PORT + 1,
-            );
-            // let addr: SocketAddr = SocketAddr::new(self.ip, self.port);
-            let mut src = SacnSource::with_ip("Bifrost", local_addr).unwrap();
-            src.register_universe(config.universe).unwrap(); // Register with the source that will be sending on the given universe.
+        let local_addr: SocketAddr = SocketAddr::new(
+            IpAddr::V4("0.0.0.0".parse().unwrap()),
+            ACN_SDT_MULTICAST_PORT + 1,
+        );
+        // let addr: SocketAddr = SocketAddr::new(self.ip, self.port);
+        let mut src = SacnSource::with_ip("Bifrost", local_addr).unwrap();
+        src.register_universe(self.config.universe).unwrap(); // Register with the source that will be sending on the given universe.
 
-            return Some(src);
+        return Some(src);
+    }
+
+    pub fn layout_color(&self, color: &Color) -> Vec<u8> {
+        match self.config.layout {
+            RGBLayout::RGB => vec![color.0, color.1, color.2],
+            RGBLayout::RGBPar => vec![0, 0, color.0, color.1, color.2],
         }
-        None
     }
 }
 
@@ -77,7 +90,7 @@ pub fn get_services(response: &mdns::Response) -> ServiceMap {
                         })
                         .next();
                     if let Some(ip) = ip {
-                        let config = SERVICE_CONFIG.get(&ptr).cloned();
+                        let config = SERVICE_CONFIG.get(&ptr).unwrap().clone();
                         Some((
                             target,
                             Service {

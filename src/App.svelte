@@ -22,7 +22,6 @@
   <Sequence />
   <Pattern />
 
-  <pre>{JSON.stringify(currentPattern, null, 2)}</pre>
   
   <Stage/>
 </main>
@@ -30,11 +29,13 @@
 <style>
   main {
     display: grid;
-    grid-template-areas:
-      "header header"
-      "sequence sequence"
-      "pattern stage"
-      "debug debug";
+    grid:
+      "header header" 2.5rem
+      "sequence sequence" min-content
+      "pattern stage" auto
+      "debug debug" auto / 1fr 1fr;
+    
+    max-height: 100vh;
   }
 
   header {

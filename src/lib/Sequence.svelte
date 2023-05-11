@@ -19,10 +19,6 @@
 
     addPattern(name)
   }
-
-
-
-  
 </script>
 
 <div>
@@ -40,21 +36,13 @@
       sequence.update()
     }}>
       {@const [name, pattern] = unpackPattern($sequence.patterns[item.id])}
-      <span class:selected={$selected === item.id} on:click|preventDefault={() => {$selected = item.id}}>{name}</span>
+      <span
+        class:selected={$selected === item.id}
+        on:click|preventDefault={() => {$selected = item.id}}>
+        {name}
+      </span>
     </Track>
   {/if}
-  
-  <!-- <section>
-    {#each $patterns || [] as pattern, index}
-    <button
-    class:current={$sequence.current === index}
-    class:selected={$selected === index}
-      on:click={() => select(index)}
-    >
-      {pattern.name}
-    </button>
-    {/each}
-  </section> -->
 </div>
 
 <style>
@@ -70,6 +58,12 @@
     gap: .5rem;
     height: 4rem;
     margin: .5rem;
+  }
+
+  span {
+    width: 100%;
+    height: 100%;
+    display: block;
   }
 
   button {

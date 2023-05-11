@@ -9,7 +9,7 @@ pub struct Solid {
 }
 
 impl Show for Solid {
-    fn tick(&mut self, progress: f32,  stage: &mut stage::Stage) {
+    fn tick(&mut self, progress: f32, stage: &mut stage::Stage) {
         for i in 0..stage.size {
             stage.set(i, self.color);
         }

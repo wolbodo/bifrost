@@ -21,15 +21,12 @@ impl Blink {
 
 impl Show for Blink {
     fn tick(&mut self, progress: f32, stage: &mut stage::Stage) {
-        let color = match self.on >= progress  {
+        let color = match self.on >= progress {
             true => self.color,
             false => Color::BLACK,
         };
         for i in 0..stage.size {
-            stage.set(
-                i,
-                color
-            )
+            stage.set(i, color)
         }
     }
 }
@@ -82,5 +79,4 @@ impl Show for Wave {
             self.direction *= -1;
         }
     }
-
 }
