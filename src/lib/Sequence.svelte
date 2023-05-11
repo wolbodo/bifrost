@@ -6,7 +6,7 @@
 
 <script lang="ts">
   import { sequence } from "./engine";
-  import { addPattern, isPatternName, unpackPattern } from "./patterns/pattern";
+  import { patterns, addPattern, isPatternName, unpackPattern } from "./patterns/pattern";
   import Track from "./Track.svelte";
   import { invoke } from "@tauri-apps/api";
 
@@ -24,7 +24,7 @@
 <div>
   <select on:change={onChange}>
     <option>Add +</option>
-    {#each ['solid', 'blink', 'fade', 'random_chase'] as name}
+    {#each Object.keys(patterns) as name}
     <option>{name}</option>
     {/each}
   </select>

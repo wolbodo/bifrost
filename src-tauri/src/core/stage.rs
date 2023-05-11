@@ -47,7 +47,7 @@ impl Color {
 pub struct Stage {
     rgb: Vec<Color>,
     pub size: usize,
-    service: Service,
+    pub service: Service,
 
     #[serde(skip)]
     pub sacn: Option<SacnSource>,
@@ -79,17 +79,6 @@ impl Stage {
         }
     }
 
-    pub fn print(&self) -> () {
-        println!(
-            "stage: {:?}",
-            self.rgb
-                .iter()
-                .map(|c| hex::encode([c.0, c.1, c.2]))
-                .collect::<Vec<String>>()
-                .join(" ")
-        )
-    }
-
     pub fn set(&mut self, fixture: usize, color: Color) -> () {
         self.rgb[fixture] = color;
     }
@@ -117,7 +106,7 @@ impl Stage {
                 self.service.addr,
                 SYNC_UNI,
             ) {
-                Ok(_) => (print!(".")),
+                Ok(_) => (),
                 Err(e) => println!("error sending: {:?}", e),
             }
         }

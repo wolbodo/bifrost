@@ -2,23 +2,20 @@ pub mod blink;
 pub mod fade;
 pub mod random_chase;
 pub mod solid;
+pub mod wave;
 
 use erased_serde::serialize_trait_object;
 use serde::{Deserialize, Serialize};
 
 use crate::core::stage;
 
-use crate::core::patterns::blink::Blink;
-use crate::core::patterns::fade::Fade;
-use crate::core::patterns::random_chase::RandomChase;
-use crate::core::patterns::solid::Solid;
-
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Pattern {
-    Solid(Solid),
-    Blink(Blink),
-    Fade(Fade),
-    RandomChase(RandomChase),
+    Solid(solid::Solid),
+    Blink(blink::Blink),
+    Fade(fade::Fade),
+    RandomChase(random_chase::RandomChase),
+    Wave(wave::Wave),
 }
 
 pub trait Show: Send + Sync + erased_serde::Serialize {
@@ -33,6 +30,7 @@ impl Show for Pattern {
             Pattern::Fade(f) => f.tick(progress, stage),
             Pattern::RandomChase(rc) => rc.tick(progress, stage),
             Pattern::Solid(s) => s.tick(progress, stage),
+            Pattern::Wave(s) => s.tick(progress, stage),
         }
     }
 }

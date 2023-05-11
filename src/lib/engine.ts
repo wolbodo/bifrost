@@ -9,6 +9,7 @@ export type Sequence = {
   track: {
     id: number;
     width: number;
+    speed: number;
   }[];
   time: number;
 };

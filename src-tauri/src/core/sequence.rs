@@ -9,6 +9,7 @@ use crate::core::stage::Stage;
 pub struct Slot {
     id: usize,
     width: usize,
+    speed: f32,
 }
 
 const SLOT_SIZE: u32 = 64;
@@ -19,6 +20,7 @@ pub struct Sequence {
     track: Vec<Slot>,
     time: u32,
     id_counter: usize,
+    scale_time: bool,
 }
 
 impl Sequence {
@@ -28,6 +30,7 @@ impl Sequence {
             track: Vec::new(),
             time: 0,
             id_counter: 0,
+            scale_time: false,
         }
     }
     pub fn get_time(&self) -> u32 {
@@ -37,7 +40,11 @@ impl Sequence {
         let id = self.id_counter;
         self.id_counter += 1;
         self.patterns.insert(id, pattern);
-        self.track.push(Slot { id, width: 1 });
+        self.track.push(Slot {
+            id,
+            width: 1,
+            speed: 1.0,
+        });
     }
     pub fn set_pattern(&mut self, index: usize, pattern: Pattern) {
         self.patterns.insert(index, pattern);
@@ -89,9 +96,15 @@ impl Sequence {
         if let Some((current_index, time_passed)) = self.current() {
             if let Some(current) = self.track.get(current_index) {
                 if let Some(pattern) = self.patterns.get_mut(&current.id) {
-                    let pattern_duration = current.width * SLOT_SIZE as usize;
-                    let time_in_pattern = self.time - (time_passed - pattern_duration) as u32;
-                    let progress = time_in_pattern as f32 / pattern_duration as f32;
+                    let progress = match self.scale_time {
+                        true => {
+                            let pattern_duration = current.width * SLOT_SIZE as usize;
+                            let time_in_pattern =
+                                self.time - (time_passed - pattern_duration) as u32;
+                            time_in_pattern as f32 / pattern_duration as f32
+                        }
+                        false => ((self.time as f32 * current.speed) / SLOT_SIZE as f32) % 1.0,
+                    };
 
                     pattern.tick(progress, stage);
                 }

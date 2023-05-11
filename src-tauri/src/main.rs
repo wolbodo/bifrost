@@ -154,7 +154,6 @@ async fn discover(
         println!("found e131 devices: {:?}", current_services);
         let mut services = services.lock().await;
 
-        println!("Updating services");
         for key in services.keys().cloned().collect::<Vec<String>>() {
             if !current_services.contains_key(&key) {
                 services.remove(&key);

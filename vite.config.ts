@@ -10,11 +10,11 @@ export default defineConfig(async () => {
   return {
     plugins: [
       svelte({
-        inspector: {
-          toggleKeyCombo: "meta-shift",
-          holdMode: true,
-          toggleButtonPos: "bottom-right",
-        },
+        // inspector: {
+        //   toggleKeyCombo: "meta-shift",
+        //   holdMode: true,
+        //   toggleButtonPos: "bottom-right",
+        // },
         preprocess: [
           sveltePreprocess({
             typescript: true,

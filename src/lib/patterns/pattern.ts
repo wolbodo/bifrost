@@ -1,17 +1,20 @@
 import type { Color } from "../type";
 import { Base } from "./type";
+import { invoke } from "@tauri-apps/api";
+import { sequence } from "../engine";
+
 import * as Solid from "./Solid.svelte";
 import * as Fade from "./Fade.svelte";
 import * as Blink from "./Blink.svelte";
 import * as RandomChase from "./RandomChase.svelte";
-import { invoke } from "@tauri-apps/api";
-import { sequence } from "../engine";
+import * as Wave from "./Wave.svelte";
 
-const patterns = {
+export const patterns = {
   blink: Blink,
   random_chase: RandomChase,
   solid: Solid,
   fade: Fade,
+  wave: Wave,
 };
 
 type Patterns = typeof patterns;
@@ -65,9 +68,16 @@ export const getComponent = (pattern: Pattern) => {
   return component;
 };
 
-export const addPattern = (name: keyof PatternMap) => {
+export const addPattern = <K extends keyof PatternTypes>(
+  name: K,
+  values?: PatternTypes[K]
+) => {
   const Cls = getPatternClass(name);
   const pattern = new Cls();
+
+  if (values) {
+    Object.assign(pattern, values);
+  }
 
   invoke("add_pattern", { pattern: packPattern(pattern) });
   sequence.update();
