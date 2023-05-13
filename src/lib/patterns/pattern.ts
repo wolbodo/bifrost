@@ -8,6 +8,7 @@ import * as Fade from "./Fade.svelte";
 import * as Blink from "./Blink.svelte";
 import * as RandomChase from "./RandomChase.svelte";
 import * as Wave from "./Wave.svelte";
+import * as RainbowWave from "./RainbowWave.svelte";
 
 export const patterns = {
   blink: Blink,
@@ -15,6 +16,7 @@ export const patterns = {
   solid: Solid,
   fade: Fade,
   wave: Wave,
+  rainbow_wave: RainbowWave,
 };
 
 type Patterns = typeof patterns;

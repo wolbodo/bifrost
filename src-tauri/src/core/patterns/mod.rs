@@ -3,6 +3,7 @@ pub mod fade;
 pub mod random_chase;
 pub mod solid;
 pub mod wave;
+pub mod rainbow_wave;
 
 use erased_serde::serialize_trait_object;
 use serde::{Deserialize, Serialize};
@@ -16,6 +17,7 @@ pub enum Pattern {
     Fade(fade::Fade),
     RandomChase(random_chase::RandomChase),
     Wave(wave::Wave),
+    RainbowWave(rainbow_wave::RainbowWave),
 }
 
 pub trait Show: Send + Sync + erased_serde::Serialize {
@@ -31,6 +33,7 @@ impl Show for Pattern {
             Pattern::RandomChase(rc) => rc.tick(progress, stage),
             Pattern::Solid(s) => s.tick(progress, stage),
             Pattern::Wave(s) => s.tick(progress, stage),
+            Pattern::RainbowWave(s) => s.tick(progress, stage),
         }
     }
 }
