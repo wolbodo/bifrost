@@ -39,7 +39,7 @@
   ul {
     --size: .5rem;
     display: grid;
-    grid-template-columns: repeat(16, minmax(var(--size), 1fr));
+    grid-template-columns: repeat(4, minmax(var(--size), 1fr));
     max-height: 10rem;
     gap: .2rem;
     list-style: none;
