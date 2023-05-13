@@ -1,10 +1,10 @@
+#![windows_subsystem = "windows"]
 mod core;
 
 use futures_util::{pin_mut, stream::StreamExt};
 use serde_json::Value;
 use std::time::Instant;
 use std::{sync::Arc, time::Duration};
-use tauri::App;
 use tauri::{async_runtime::Mutex, Manager, Window};
 use tokio;
 use tokio::sync::mpsc;
