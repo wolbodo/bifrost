@@ -7,10 +7,17 @@
   export let value: number;
 
   const onChange = (e: Event) => dispatch('change', { value: (e.target as HTMLInputElement).value })
+  const presentValue = (value?: number): string => {
+    if (value === undefined) return '';
+    if ((value |0) === value) {
+      return value.toString();
+    }
+    return value.toPrecision(2)
+  }
 </script>
 
 <label>
-  {label}: {value?.toPrecision(2)}
+  {label}: {presentValue(value)}
   <input
     {...$$restProps}
     type='range'
