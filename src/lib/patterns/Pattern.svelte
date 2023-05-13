@@ -51,7 +51,7 @@
       <button on:click={deletePattern}>Delete</button>
       <button on:click={clonePattern}>Clone</button>
     </section>
-    <Range label='speed' min={0.1} max={4} step={0.1} value={slot.speed} on:change={(e) => setSpeed(parseFloat(e.detail.value))} />
+    <Range label='speed' min={0.01} max={4} step={0.01} value={slot.speed} on:change={(e) => setSpeed(parseFloat(e.detail.value))} />
     <svelte:component
       this={getComponent(pattern)}
       on:change={apply}
@@ -67,6 +67,6 @@
     grid-area: pattern;
 
     display: grid;
-    
+    padding: .5rem;
   }
 </style>

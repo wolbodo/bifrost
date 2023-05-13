@@ -16,7 +16,10 @@
     <span>Time: {$time}</span>
     <button on:click={() => invoke('start_engine')}>▶️</button>
     <button on:click={() => invoke('stop_engine')}>⏹️</button>
-    <button on:click={() => invoke('set_bpm', { bpm: 240 })}>🔄</button>
+    <button on:click={() => invoke('set_bpm', { bpm: 30 })}>30</button>
+    <button on:click={() => invoke('set_bpm', { bpm: 60 })}>60</button>
+    <button on:click={() => invoke('set_bpm', { bpm: 120 })}>120</button>
+    <button on:click={() => invoke('set_bpm', { bpm: 240 })}>240</button>
   </header>
 
   <Sequence />
@@ -40,7 +43,7 @@
 
   header {
     grid-area: header;
-    grid: 2.5rem / auto repeat(3, min-content);
+    grid: 2.5rem / auto repeat(6, min-content);
     gap: .5rem;
     display: grid;
   }

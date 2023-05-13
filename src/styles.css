@@ -64,9 +64,9 @@ button {
   font-weight: 500;
   font-family: inherit;
   color: var(--primary-4);
-  background-color: var(--secondary-1);
+  background-color: var(--primary-1);
   transition: border-color 0.25s;
-  box-shadow: 0 2px 2px var(--secondary-4);
+  box-shadow: 0 2px 2px var(--primary-4);
 }
 
 button {
