@@ -19,15 +19,14 @@
 
 <script lang=ts>
   import Color from 'color'
-  import Range from "../Range.svelte";
+  import Range from "../controls/Range.svelte";
   import { createEventDispatcher } from 'svelte';
-  import ColorPicker from "../ColorPicker.svelte";
+  import ColorPicker from "../controls/ColorPicker.svelte";
+  import Checkbox from '../controls/Checkbox.svelte';
 
   export let data: Fade;
 
   const dispatch = createEventDispatcher();
-
-  $: color = Color(data.color).hex()
 
   const onChange = async (diff: Partial<Fade>) => {
     dispatch('change', { ...data, ...diff })
@@ -53,15 +52,10 @@
     }}
   />
 
-  <label>Fade out<input type='checkbox' checked={data.fade_out} on:change={({ target }) => {
-    onChange({ fade_out: target.checked })
-  }}/></label>
-
-<style>
-  input {
-    background: var(--color);
-
-    width: 3rem;
-    height: 3rem;
-  }
-</style>
+  <Checkbox
+    label='Fade out'
+    checked={data.fade_out}
+    on:change={({ detail }) => {
+      onChange({ fade_out: detail.checked })
+    }}
+  />

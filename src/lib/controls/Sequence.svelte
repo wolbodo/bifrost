@@ -5,8 +5,8 @@
 </script>
 
 <script lang="ts">
-  import { sequence } from "./engine";
-  import { patterns, addPattern, isPatternName, unpackPattern } from "./patterns/pattern";
+  import { sequence } from "../engine";
+  import { patterns, addPattern, isPatternName, unpackPattern } from "../patterns/pattern";
   import Track from "./Track.svelte";
   import { invoke } from "@tauri-apps/api";
 

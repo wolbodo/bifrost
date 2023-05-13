@@ -18,7 +18,7 @@
 
 <script lang=ts>
   import { createEventDispatcher } from 'svelte';
-  import ColorPicker from '../ColorPicker.svelte';
+  import ColorPicker from '../controls/ColorPicker.svelte';
 
   export let data: Solid;
 

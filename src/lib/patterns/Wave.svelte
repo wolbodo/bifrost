@@ -19,9 +19,10 @@
 
 <script lang=ts>
   import Color from 'color'
-  import Range from "../Range.svelte";
+  import Range from "../controls/Range.svelte";
   import { createEventDispatcher } from 'svelte';
-  import ColorPicker from "../ColorPicker.svelte";
+  import ColorPicker from "../controls/ColorPicker.svelte";
+  import Checkbox from "../controls/Checkbox.svelte";
 
   export let data: Wave;
 
@@ -53,10 +54,15 @@
       onChange({ size: Number(detail.value) })
     }}
   />
-
-  <label>Fade out<input type='checkbox' checked={data.direction} on:change={({ target }) => {
-    onChange({ direction: target.checked })
-  }}/></label>
+  
+  <Checkbox
+    label='direction'
+    checked={data.direction}
+    on:change={({ detail }) => {
+      onChange({ direction: detail.checked })
+    }}
+  />
+  
 
 <style>
   input {

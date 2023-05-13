@@ -2,8 +2,8 @@
   import { time, sequence }from './lib/engine'
   
   import { invoke } from '@tauri-apps/api'
-  import Stage from './lib/Stage.svelte'
-  import Sequence from './lib/Sequence.svelte'
+  import Stage from './lib/controls/Stage.svelte'
+  import Sequence from './lib/controls/Sequence.svelte'
   import Pattern from './lib/patterns/Pattern.svelte'
 
   $: currentPattern = $sequence?.patterns[$sequence.current]

@@ -10,7 +10,7 @@
 </script>
 
 <label>
-  {label}: {value.toPrecision(2)}
+  {label}: {value?.toPrecision(2)}
   <input
     {...$$restProps}
     type='range'
@@ -20,11 +20,14 @@
 </label>
 
 <style>
+  label {
+    /* padding: .5rem; */
+    margin: .2rem;
+    box-sizing: border-box;
+  }
   input[type=range] {
     -webkit-appearance: none;
-    margin: 1rem;
     width: 100%;
-    box-sizing: border-box;
 
     background-color: var(--primary-0);
   }

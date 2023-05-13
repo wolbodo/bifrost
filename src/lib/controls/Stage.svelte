@@ -1,6 +1,6 @@
 <script lang='ts'>
-  import { stage } from './engine';
-  import { discovery } from './mdns'
+  import { stage } from '../engine';
+  import { discovery } from '../mdns'
   import { invoke } from "@tauri-apps/api";
 
   let service

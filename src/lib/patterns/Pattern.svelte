@@ -4,9 +4,9 @@
 
   import { debounce } from '../util';
 
-  import { selected } from '../Sequence.svelte'
+  import { selected } from '../controls/Sequence.svelte'
   import { getComponent, packPattern, unpackPattern, addPattern } from './pattern';
-  import Range from '../Range.svelte';
+  import Range from '../controls/Range.svelte';
 
   $: selectedPattern = $sequence && $sequence.patterns[$selected]
   $: ([, pattern] = selectedPattern ? unpackPattern(selectedPattern) : [])

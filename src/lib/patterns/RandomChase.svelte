@@ -17,25 +17,13 @@
       this.speed = speed;
     }
   }
-
-  // type T = RandomChase['name']
-
-  //   constructor() {
-  //     this.name = "random_chase";
-  //     this.color = [0, 0, 0];
-  //     this.randomness = 0.5;
-  //     this.steps = 10;
-  //     this.speed = 0.5;
-  //   }
-  // };
-
 </script>
 
 <script lang=ts>
   import { createEventDispatcher } from 'svelte';
   import Color from 'color'
-  import Range from "../Range.svelte";
-  import ColorPicker from "../ColorPicker.svelte";
+  import Range from "../controls/Range.svelte";
+  import ColorPicker from "../controls/ColorPicker.svelte";
 
   export let data: RandomChase;
 

@@ -8,7 +8,7 @@
     direction: boolean;
     size: number;
 
-    constructor(color?: TColor) {
+    constructor() {
       super()
       this.direction = false
       this.saturation = 1;
@@ -19,10 +19,9 @@
 </script>
 
 <script lang=ts>
-  import Color from 'color'
-  import Range from "../Range.svelte";
+  import Range from "../controls/Range.svelte";
   import { createEventDispatcher } from 'svelte';
-  import ColorPicker from "../ColorPicker.svelte";
+  import Checkbox from '../controls/Checkbox.svelte';
 
   export let data: RainbowWave;
 
@@ -37,6 +36,26 @@
   <h2>{data.name}</h2>
   
   <Range
+    label='saturation'
+    min='0'
+    max='1'
+    step='0.05'
+    value={data.saturation}
+    on:change={({ detail }) => {
+      onChange({ saturation: Number(detail.value) })
+    }}
+  />
+  <Range
+    label='lightness'
+    min='0'
+    max='1'
+    step='0.05'
+    value={data.lightness}
+    on:change={({ detail }) => {
+      onChange({ lightness: Number(detail.value) })
+    }}
+  />
+  <Range
     label='size'
     min='0.1'
     max='4'
@@ -47,10 +66,14 @@
     }}
   />
 
-  <label>Fade out<input type='checkbox' checked={data.direction} on:change={({ target }) => {
-    onChange({ direction: target.checked })
-  }}/></label>
-
+  <Checkbox
+    label='direction'
+    checked={data.direction}
+    on:change={({ detail }) => {
+      onChange({ direction: detail.checked })
+    }}
+  />
+  
 <style>
   input {
     background: var(--color);

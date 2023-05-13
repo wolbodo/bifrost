@@ -19,8 +19,8 @@
 <script lang=ts>
   import { createEventDispatcher } from 'svelte';
   import Color from 'color'
-  import Range from "../Range.svelte";
-  import ColorPicker from "../ColorPicker.svelte";
+  import Range from "../controls/Range.svelte";
+  import ColorPicker from "../controls/ColorPicker.svelte";
 
   export let data: Blink;
 

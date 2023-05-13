@@ -48,28 +48,35 @@
 	}
 </script>
 
-<article
-				 bind:this={el}
-				 style:--hue="{hue}deg"
-				 style:--lightness="{lightness}%"
-				 style:--saturation="{saturation}%"
-				 on:mousedown={(event) =>{dragstart = true; onMouse(event)}}
-				 on:mousemove={onMouse}
-				 on:mouseup={() => {dragstart = false}}
-				on:touchstart={(event) => {dragstart = true; onTouch(event)}}
-	      on:touchmove={onTouch}
-	      on:touchend={() => { dragstart = false}}
+<article>
+
+	<article class='hue'
+		bind:this={el}
+		style:--hue="{hue}deg"
+		style:--lightness="{lightness}%"
+		style:--saturation="{saturation}%"
+		on:mousedown={(event) =>{dragstart = true; onMouse(event)}}
+		on:mousemove={onMouse}
+		on:mouseup={() => {dragstart = false}}
+		on:touchstart={(event) => {dragstart = true; onTouch(event)}}
+		on:touchmove={onTouch}
+		on:touchend={() => { dragstart = false}}
 	>
-	<div class='gradient' />
-	<div class='pointer' />
+		<div class='gradient' />
+		<div class='pointer' />
+	</article>
+			
+	<Range label="lightness" bind:value={lightness} min={0} max={100} />
+	<Range label="saturation" bind:value={saturation} min={0} max={100} />
 </article>
 
-<Range label="lightness" bind:value={lightness} min={0} max={100} />
-<Range label="saturation" bind:value={saturation} min={0} max={100} />
-
 <style>
-	
 	article {
+		display: grid;
+		grid: "hue lightness" "hue saturation" / 1fr 1fr;
+	}
+	.hue {
+		grid-area: hue;
 		max-width: 10rem;
 		position: relative;
 		width: 100%;
@@ -78,7 +85,7 @@
 		--pointer-size: 60%;
 		--hue: 120deg;
 	}
-	article > * {
+	.hue > * {
 		pointer-events: none;
 	}
 	
