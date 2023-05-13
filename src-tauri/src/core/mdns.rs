@@ -52,7 +52,7 @@ impl Service {
     pub fn layout_color(&self, color: &Color) -> Vec<u8> {
         match self.config.layout {
             RGBLayout::RGB => vec![color.0, color.1, color.2],
-            RGBLayout::RGBPar => vec![0, 0, color.0, color.1, color.2],
+            RGBLayout::RGBPar => vec![0, color.0, color.1, color.2, 0],
         }
     }
 }
