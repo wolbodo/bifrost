@@ -27,6 +27,7 @@ fn main() {
             set_track,
             get_sequence,
             set_service,
+            clear,
         ])
         .setup(move |app| {
             let mut engine = core::engine::Engine::new();
@@ -222,6 +223,15 @@ fn set_service(
     if let Some(service) = services.get(&service) {
         engine.set_stage(core::stage::Stage::new(service));
     }
+}
+
+
+#[tauri::command]
+fn clear(
+    engine: tauri::State<Arc<Mutex<core::engine::Engine>>>,
+) {
+    let mut engine = engine.blocking_lock();
+    engine.stage.clear();
 }
 
 // #[tauri::command]

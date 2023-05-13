@@ -9,6 +9,7 @@ import * as Blink from "./Blink.svelte";
 import * as RandomChase from "./RandomChase.svelte";
 import * as Wave from "./Wave.svelte";
 import * as RainbowWave from "./RainbowWave.svelte";
+import { selected } from "../controls/Sequence.svelte";
 
 export const patterns = {
   blink: Blink,
@@ -70,7 +71,7 @@ export const getComponent = (pattern: Pattern) => {
   return component;
 };
 
-export const addPattern = <K extends keyof PatternTypes>(
+export const addPattern = async <K extends keyof PatternTypes>(
   name: K,
   values?: PatternTypes[K]
 ) => {
@@ -82,5 +83,6 @@ export const addPattern = <K extends keyof PatternTypes>(
   }
 
   invoke("add_pattern", { pattern: packPattern(pattern) });
-  sequence.update();
+  await sequence.update();
+  selected.set(pattern.id);
 };

@@ -47,6 +47,10 @@ impl Sequence {
         });
     }
     pub fn set_pattern(&mut self, index: usize, pattern: Pattern) {
+        // if let Some(old_pattern) = self.patterns.get(&index) {
+        //     pattern.remember(&old_pattern);
+        // }
+
         self.patterns.insert(index, pattern);
     }
     pub fn delete_pattern(&mut self, index: &usize) {

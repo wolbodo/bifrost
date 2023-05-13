@@ -19,6 +19,13 @@
 
     addPattern(name)
   }
+
+  $: if ($sequence && !($selected in $sequence.patterns) && $sequence.track.length > 0) {
+    const last = $sequence.track[$sequence.track.length-1]
+    selected.set(last.id)
+  }
+
+
 </script>
 
 <div>

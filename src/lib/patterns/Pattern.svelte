@@ -20,13 +20,10 @@
     sequence.update()
   }, 100)
 
-  const deletePattern = () => {
+  const deletePattern = async () => {
     invoke('delete_pattern', { index: $selected })
     sequence.update()
 
-    if (!pattern && $sequence.track.length) {
-      $selected = 0;
-    }
   }
 
   const clonePattern = () => {

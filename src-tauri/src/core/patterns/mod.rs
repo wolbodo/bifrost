@@ -23,7 +23,6 @@ pub enum Pattern {
 pub trait Show: Send + Sync + erased_serde::Serialize {
     fn tick(&mut self, progress: f32, stage: &mut stage::Stage);
 }
-serialize_trait_object!(Show);
 
 impl Show for Pattern {
     fn tick(&mut self, progress: f32, stage: &mut stage::Stage) {

@@ -97,6 +97,11 @@ impl Stage {
         self.rgb[fixture]
     }
 
+    pub fn clear(&mut self) {
+        self.rgb = vec![Color(0, 0, 0); self.size];
+        self.update();
+    }
+
     pub fn update(&mut self) {
         if let Some(ref mut sacn) = self.sacn {
             let mut data = vec![0];

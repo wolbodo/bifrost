@@ -20,6 +20,7 @@
     <button on:click={() => invoke('set_bpm', { bpm: 60 })}>60</button>
     <button on:click={() => invoke('set_bpm', { bpm: 120 })}>120</button>
     <button on:click={() => invoke('set_bpm', { bpm: 240 })}>240</button>
+    <button on:click={() => invoke('clear')}>Clear</button>
   </header>
 
   <Sequence />
@@ -43,7 +44,7 @@
 
   header {
     grid-area: header;
-    grid: 2.5rem / auto repeat(6, min-content);
+    grid: 2.5rem / auto repeat(7, min-content);
     gap: .5rem;
     display: grid;
   }
