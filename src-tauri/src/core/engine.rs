@@ -1,10 +1,7 @@
 use crate::core::mdns;
 use crate::core::sequence::Sequence;
 use crate::core::stage::Stage;
-use crate::SERVICE_NAME;
 use serde::Serialize;
-
-use super::mdns::ServiceConfig;
 
 #[derive(Serialize, Clone, PartialEq)]
 pub enum State {
@@ -35,9 +32,6 @@ impl Engine {
         }
     }
 
-    fn get_state(&self) -> State {
-        self.state.clone()
-    }
     pub fn tick(&mut self) {
         self.sequence.tick(&mut self.stage);
 

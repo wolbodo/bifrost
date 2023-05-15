@@ -1,4 +1,6 @@
 <script lang='ts'>
+  import { time } from '../engine';
+
   import { createEventDispatcher } from 'svelte';
   import { dndzone, SOURCES, TRIGGERS, SHADOW_PLACEHOLDER_ITEM_ID	 } from 'svelte-dnd-action';
   import TrackItem from './TrackItem.svelte';
@@ -67,9 +69,9 @@
       if (!(target instanceof HTMLElement)) continue;
       
       if (Boolean(target.style.width)) {
-        const itemId = Array.from(element.children).indexOf(target);
-        const item = items[itemId];
-        console.log(itemId, item)
+        const childId = Array.from(element.children).indexOf(target);
+        const item = items[childId];
+        console.log(childId, items, item)
         if (!item) continue;
         
         let width = parseInt(target.style.width) / GRID_SPACING |0 || 1;
@@ -91,7 +93,7 @@
   use:dndzone={{items, dragDisabled}}
   on:consider={handleConsider}
   on:finalize={handleFinalize}
->
+  >
   {#each items as item (item.id)}
     <TrackItem bind:width={item.width} {observer} {mouseMove} {startDrag} {handleKeyDown}>
       {#if item.id === SHADOW_PLACEHOLDER_ITEM_ID}
@@ -101,10 +103,16 @@
       {/if}
     </TrackItem>
   {/each}
+
+  <span 
+    class="time"
+    style:--time={$time}
+  />
 </article>
 
 <style>
   article {
+    position: relative;
     display: grid;
     grid: 1fr / repeat(auto-fill, 1.5rem);
     gap: 0.2rem;
@@ -113,5 +121,17 @@
     border: thin solid var(--primary-1);
 
     height: 2rem
+  }
+
+  .time {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border: thin solid var(--secondary-1);
+
+    left: calc(var(--time) * 1.5rem / 64);
+    pointer-events: none;
+
+    /* transition: left 0.2s linear; */
   }
 </style>

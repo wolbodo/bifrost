@@ -17,6 +17,7 @@ export type Sequence = {
 export type Stage = {
   rgb: [number, number, number][];
   size: number;
+  time: number;
 };
 
 export type Engine = {
@@ -32,7 +33,12 @@ export const engine = readable<Engine>(null, (set) => {
   });
 });
 export const stage = readable<Stage>(null, (set) => {
-  listen<Stage>("tick", (event) => {
+  listen<Stage>("stage", (event) => {
+    set(event.payload);
+  });
+});
+export const time = readable<number>(0, (set) => {
+  listen<number>("tick", (event) => {
     set(event.payload);
   });
 });
@@ -52,7 +58,6 @@ export const sequence = (() => {
   };
 })();
 
-export const time = derived(engine, (engine) => engine?.sequence.time);
 export const currentPattern = derived(
   engine,
   (engine) => engine?.sequence.current

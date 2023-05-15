@@ -18,7 +18,7 @@ const SLOT_SIZE: u32 = 64;
 pub struct Sequence {
     patterns: HashMap<usize, Pattern>,
     track: Vec<Slot>,
-    time: u32,
+    pub time: u32,
     id_counter: usize,
     scale_time: bool,
 }
@@ -32,9 +32,6 @@ impl Sequence {
             id_counter: 0,
             scale_time: false,
         }
-    }
-    pub fn get_time(&self) -> u32 {
-        self.time
     }
     pub fn add_pattern(&mut self, pattern: Pattern) {
         let id = self.id_counter;

@@ -10,7 +10,6 @@
   import Track from "./Track.svelte";
   import { invoke } from "@tauri-apps/api";
 
-  const select = (index) => $selected = index;
   const onChange = (e) => {
     const name: string = e.target.value;
     const reset = e.target.value = e.target.options[0].value
@@ -24,8 +23,6 @@
     const last = $sequence.track[$sequence.track.length-1]
     selected.set(last.id)
   }
-
-
 </script>
 
 <div>

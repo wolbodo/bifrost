@@ -86,8 +86,15 @@ fn start_engine(
                         _ = interval.tick() => {
                             let mut engine = engine_mutex.lock().await;
                             engine.tick();
+
+                            window.emit("tick", serde_json::to_value(
+                                &engine.sequence.time,
+                            ).unwrap()).unwrap();
+
                             window
-                                .emit("tick", serde_json::to_value(&engine.stage).unwrap())
+                                .emit("stage", serde_json::to_value(
+                                    &engine.stage
+                                ).unwrap())
                                 .unwrap();
 
                             // check if there's a new interval duration waiting to be applied
