@@ -5,12 +5,12 @@ pub mod solid;
 pub mod wave;
 pub mod rainbow_wave;
 
-use erased_serde::serialize_trait_object;
 use serde::{Deserialize, Serialize};
 
 use crate::core::stage;
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(tag = "type")]
 pub enum Pattern {
     Solid(solid::Solid),
     Blink(blink::Blink),
@@ -20,7 +20,7 @@ pub enum Pattern {
     RainbowWave(rainbow_wave::RainbowWave),
 }
 
-pub trait Show: Send + Sync + erased_serde::Serialize {
+pub trait Show {
     fn tick(&mut self, progress: f32, stage: &mut stage::Stage);
 }
 

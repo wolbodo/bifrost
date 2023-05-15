@@ -5,11 +5,10 @@
   import { debounce } from '../util';
 
   import { selected } from '../controls/Sequence.svelte'
-  import { getComponent, packPattern, unpackPattern, addPattern } from './pattern';
+  import { getComponent, packPattern, addPattern } from './pattern';
   import Range from '../controls/Range.svelte';
 
   $: selectedPattern = $sequence && $sequence.patterns[$selected]
-  $: ([, pattern] = selectedPattern ? unpackPattern(selectedPattern) : [])
   $: slot = $sequence && $sequence.track.find(({ id }) => $selected === id)
 
   const apply = debounce(async ({ detail }) => {
@@ -27,7 +26,7 @@
   }
 
   const clonePattern = () => {
-    addPattern(pattern.name, pattern)
+    addPattern(selectedPattern.name, selectedPattern)
   }
 
   const setSpeed = (speed) => {
@@ -38,10 +37,10 @@
     sequence.update()
   }
 
-  $: { console.log('pattern', pattern)}
+  $: { console.log('pattern', selectedPattern)}
 </script>
 
-{#if pattern}
+{#if selectedPattern}
 
 <section class='pattern'>
     <section>
@@ -50,9 +49,9 @@
     </section>
     <Range label='speed' min={0.01} max={4} step={0.01} value={slot.speed} on:change={(e) => setSpeed(parseFloat(e.detail.value))} />
     <svelte:component
-      this={getComponent(pattern)}
+      this={getComponent(selectedPattern)}
       on:change={apply}
-      data={pattern}
+      data={selectedPattern}
     />
     
   </section>

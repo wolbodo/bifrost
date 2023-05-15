@@ -42,7 +42,7 @@ const getPatternClass = (name: keyof Patterns): PatternMap[keyof Patterns] => {
   );
 };
 
-export const packPattern = (pattern: Pattern): { [name: string]: Pattern } => {
+export const packPattern = (pattern: Pattern): Pattern => {
   const module = patterns[pattern.name];
 
   if (!module) {
@@ -52,15 +52,9 @@ export const packPattern = (pattern: Pattern): { [name: string]: Pattern } => {
   const [name] = Object.entries(module).find(
     ([, cls]) => cls.prototype instanceof Base
   );
-  return {
-    [name]: pattern,
-  };
-};
-export const unpackPattern = (packed: {
-  [name: string]: Pattern;
-}): [name: string, pattern: Pattern] => {
-  const [name, pattern] = Object.entries(packed)[0];
-  return [name, pattern];
+  pattern.type = name;
+  console.log("packed:", pattern);
+  return pattern;
 };
 export const getComponent = (pattern: Pattern) => {
   const component = patterns[pattern.name].default;

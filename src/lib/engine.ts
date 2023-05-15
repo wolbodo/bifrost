@@ -5,7 +5,7 @@ import { derived, readable, writable } from "svelte/store";
 import type { Pattern } from "./patterns/pattern";
 
 export type Sequence = {
-  patterns: { [id: string]: Pattern }[];
+  patterns: Pattern[];
   track: {
     id: number;
     width: number;
