@@ -12,7 +12,6 @@
   $: slot = $sequence && $sequence.track.find(({ id }) => $selected === id)
 
   const apply = debounce(async ({ detail }) => {
-    console.log("apply", detail)
     await invoke("set_pattern",
       { index: $selected, pattern: packPattern(detail) }
     )
@@ -22,7 +21,6 @@
   const deletePattern = async () => {
     invoke('delete_pattern', { index: $selected })
     sequence.update()
-
   }
 
   const clonePattern = () => {
@@ -48,6 +46,7 @@
       <button on:click={clonePattern}>Clone</button>
     </section>
     <Range label='speed' min={0.01} max={4} step={0.01} value={slot.speed} on:change={(e) => setSpeed(parseFloat(e.detail.value))} />
+
     <svelte:component
       this={getComponent(selectedPattern)}
       on:change={apply}

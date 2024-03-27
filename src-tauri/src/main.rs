@@ -71,10 +71,8 @@ fn start_engine(
 
             // engine loop
             tauri::async_runtime::spawn(async move {
-                let BPM = 120;
-
                 let mut interval =
-                    tokio::time::interval(Duration::from_secs_f64(60.0 / (64.0 * BPM as f64)));
+                    tokio::time::interval(Duration::from_secs_f64(60.0 / (64.0 * 120 as f64)));
                 let engine_mutex = handle.state::<Arc<Mutex<core::engine::Engine>>>();
                 let receive_period = handle.state::<Mutex<mpsc::Receiver<Duration>>>();
                 let receive_stop = handle.state::<Mutex<mpsc::Receiver<StopEngine>>>();
@@ -83,30 +81,38 @@ fn start_engine(
                 println!("starting engine @{:?}", start);
                 loop {
                     tokio::select! {
-                        _ = interval.tick() => {
-                            let mut engine = engine_mutex.lock().await;
-                            engine.tick();
-
-                            window.emit("tick", serde_json::to_value(
-                                &engine.sequence.time,
-                            ).unwrap()).unwrap();
-
-                            window
-                                .emit("stage", serde_json::to_value(
-                                    &engine.stage
-                                ).unwrap())
-                                .unwrap();
-
-                            // check if there's a new interval duration waiting to be applied
-                            if let Ok(new_duration) = receive_period.lock().await.try_recv() {
-                                interval = tokio::time::interval(new_duration); // create a new interval with the updated duration
-                            }
-                        }
                         _ = receive_stop.recv() => {
                             println!("stopping engine @ {:?}", Instant::now() - start);
                             let mut engine = engine_mutex.lock().await;
                             engine.state = core::engine::State::Stopped;
                             break;
+                        }
+                        _ = interval.tick() => {
+                            let mut engine = engine_mutex.lock().await;
+                            engine.tick();
+
+                            if let Ok(value) = serde_json::to_value(&engine.sequence.time) {
+                                match window.emit("tick", value) {
+                                    Ok(_) => {}
+                                    Err(_) => {
+                                        println!("failed to emit tick");
+                                    }
+                                }
+                            }
+
+                            if let Ok(value) = serde_json::to_value(&engine.stage) {
+                                match window.emit("stage", value) {
+                                    Ok(_) => {}
+                                    Err(_) => {
+                                        println!("failed to emit stage");
+                                    }
+                                }
+                            }
+
+                            // check if there's a new interval duration waiting to be applied
+                            if let Ok(new_duration) = receive_period.lock().await.try_recv() {
+                                interval = tokio::time::interval(new_duration); // create a new interval with the updated duration
+                            }
                         }
                     }
                 }

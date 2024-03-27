@@ -25,7 +25,7 @@
     {/if}
   </select>
 
-  <ul>
+  <ul style:--width={$stage?.service.config.width}>
     {#each $stage?.rgb || [] as rgb}
       <li style="background: rgb({ rgb })" />
     {/each} 
@@ -39,7 +39,7 @@
   ul {
     --size: .5rem;
     display: grid;
-    grid-template-columns: repeat(4, minmax(var(--size), 1fr));
+    grid-template-columns: repeat(var(--width, 4), minmax(var(--size), 1fr));
     max-height: 10rem;
     gap: .2rem;
     list-style: none;

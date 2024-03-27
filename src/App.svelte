@@ -6,9 +6,6 @@
   import Sequence from './lib/controls/Sequence.svelte'
   import Pattern from './lib/patterns/Pattern.svelte'
 
-  $: currentPattern = $sequence?.patterns[$sequence.current]
-
-  let t = 500
 </script>
 
 <main>
@@ -25,7 +22,6 @@
 
   <Sequence />
   <Pattern />
-
   
   <Stage/>
 </main>

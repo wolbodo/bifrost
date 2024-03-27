@@ -18,6 +18,16 @@ export type Stage = {
   rgb: [number, number, number][];
   size: number;
   time: number;
+  service: {
+    config: {
+      layout: string;
+      size: number;
+      universe: number;
+      width: number;
+    };
+    name: string;
+    size: number;
+  };
 };
 
 export type Engine = {
@@ -43,14 +53,8 @@ export const time = readable<number>(0, (set) => {
   });
 });
 export const sequence = (() => {
-  const update = async () => {
-    const sequence = await invoke<Sequence>("get_sequence");
-    console.log("new sequence", sequence);
-    seq.set(sequence);
-  };
-  const seq = writable<Sequence>(null, () => {
-    update();
-  });
+  const update = async () => seq.set(await invoke<Sequence>("get_sequence"));
+  const seq = writable<Sequence>(null, () => update());
 
   return {
     subscribe: seq.subscribe,

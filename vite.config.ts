@@ -29,12 +29,12 @@ export default defineConfig(async () => {
     // tauri expects a fixed port, fail if that port is not available
     server: {
       host: "0.0.0.0", // listen on all addresses
-      port: 5173,
+      port: 4173,
       strictPort: true,
       hmr: {
         protocol: "ws",
         host,
-        port: 5183,
+        port: 4183,
       },
     },
     // to make use of `TAURI_DEBUG` and other env variables
