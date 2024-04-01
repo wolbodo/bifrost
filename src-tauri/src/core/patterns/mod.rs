@@ -1,9 +1,9 @@
 pub mod blink;
 pub mod fade;
+pub mod rainbow_wave;
 pub mod random_chase;
 pub mod solid;
 pub mod wave;
-pub mod rainbow_wave;
 
 use serde::{Deserialize, Serialize};
 

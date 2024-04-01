@@ -57,7 +57,7 @@ impl Show for RandomChase {
         if let Some((position, color)) = state.previous.take() {
             stage.set(position, color);
         }
-        
+
         let size = state.chase.len();
         if self.steps > size {
             for _ in size..self.steps {
@@ -67,7 +67,8 @@ impl Show for RandomChase {
             state.chase.truncate(self.steps as usize);
         }
 
-        let step = (progress * self.steps as f32 * self.speed as f32) as usize % self.steps as usize;
+        let step =
+            (progress * self.steps as f32 * self.speed as f32) as usize % self.steps as usize;
         if step % self.speed == 0 {
             if rng.gen_bool(self.randomness.into()) {
                 state.chase[step as usize] = rng.gen_range(0..stage.size);

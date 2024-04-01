@@ -10,7 +10,6 @@ use super::mdns::{RGBLayout, Service, ServiceConfig};
 #[derive(Serialize, Deserialize, Clone, Debug, Copy)]
 pub struct Color(pub u8, pub u8, pub u8);
 
-
 impl From<Rgb> for Color {
     fn from(color: Rgb) -> Self {
         Color(
@@ -30,9 +29,7 @@ impl Color {
     pub fn new(color: Srgb<f64>) -> Color {
         let color = color.into_format::<u8>();
 
-        Color(
-            color.red, color.green, color.blue
-        )
+        Color(color.red, color.green, color.blue)
     }
 
     pub fn fade(&self, amount: f32) -> Color {

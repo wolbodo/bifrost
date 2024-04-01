@@ -3,8 +3,8 @@ use crate::core::stage::{Color, Stage};
 use palette::RgbHue;
 use serde::{Deserialize, Serialize};
 
-use palette::{IntoColor, Srgb, Hsl, rgb::Rgb};
 use palette::convert::FromColorUnclamped;
+use palette::{rgb::Rgb, Hsl, IntoColor, Srgb};
 use std::f64::consts::PI;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
