@@ -1,4 +1,3 @@
-#![windows_subsystem = "windows"]
 mod core;
 
 use futures_util::{pin_mut, stream::StreamExt};

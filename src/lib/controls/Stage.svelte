@@ -1,17 +1,16 @@
-<script lang='ts'>
-  import { stage } from '../engine';
-  import { discovery } from '../mdns'
-  import { invoke } from "@tauri-apps/api";
+<script lang="ts">
+  import { stage } from "../engine";
+  import { discovery } from "../mdns";
+  import { invoke } from "@tauri-apps/api/core";
 
-  let service
+  let service;
 
   $: if ($discovery && !service) {
-    service = Object.keys($discovery)[0]
+    service = Object.keys($discovery)[0];
   }
   $: if (service) {
     invoke("set_service", { service });
   }
-
 </script>
 
 <section>
@@ -21,14 +20,14 @@
         <option value={name}>{name}</option>
       {/each}
     {:else}
-      <option value=''>loading services</option>
+      <option value="">loading services</option>
     {/if}
   </select>
 
   <ul style:--width={$stage?.service.config.width}>
     {#each $stage?.rgb || [] as rgb}
-      <li style="background: rgb({ rgb })" />
-    {/each} 
+      <li style="background: rgb({rgb})" />
+    {/each}
   </ul>
 </section>
 
@@ -37,11 +36,11 @@
     grid-area: stage;
   }
   ul {
-    --size: .5rem;
+    --size: 0.5rem;
     display: grid;
     grid-template-columns: repeat(var(--width, 4), minmax(var(--size), 1fr));
     max-height: 10rem;
-    gap: .2rem;
+    gap: 0.2rem;
     list-style: none;
     margin: none;
 

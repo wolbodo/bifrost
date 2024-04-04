@@ -1,6 +1,6 @@
 import { readable } from "svelte/store";
 import { listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 
 type Service = {
   name: string;

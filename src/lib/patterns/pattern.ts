@@ -1,6 +1,6 @@
 import type { Color } from "../type";
 import { Base } from "./type";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { sequence } from "../engine";
 
 import * as Solid from "./Solid.svelte";
