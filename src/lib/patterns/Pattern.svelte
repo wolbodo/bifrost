@@ -44,6 +44,7 @@
 {#if selectedPattern}
   <section class="pattern">
     <section>
+      <h3>{selectedPattern.name}</h3>
       <button on:click={deletePattern}>Delete</button>
       <button on:click={clonePattern}>Clone</button>
     </section>

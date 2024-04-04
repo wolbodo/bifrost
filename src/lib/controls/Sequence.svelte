@@ -98,6 +98,7 @@
     outline: 5px solid var(--primary-2);
   }
   .selected {
-    background: var(--primary-3);
+    background: var(--secondary-1);
+    color: var(--secondary-4);
   }
 </style>

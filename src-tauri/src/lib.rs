@@ -74,11 +74,13 @@ fn start_engine(
             tauri::async_runtime::spawn(async move {
                 let mut interval =
                     tokio::time::interval(Duration::from_secs_f64(60.0 / (64.0 * 120 as f64)));
+
                 let engine_mutex = handle.state::<Arc<Mutex<core::engine::Engine>>>();
                 let receive_period = handle.state::<Mutex<mpsc::Receiver<Duration>>>();
                 let receive_stop = handle.state::<Mutex<mpsc::Receiver<StopEngine>>>();
                 let mut receive_stop = receive_stop.lock().await;
                 let start = Instant::now();
+
                 println!("starting engine @{:?}", start);
                 loop {
                     tokio::select! {
