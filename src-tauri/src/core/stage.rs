@@ -1,9 +1,7 @@
 use colors_transform::{self, Color as ctColor, Rgb};
-use hex;
 use palette::Srgb;
 use sacn::source::SacnSource;
 use serde::{Deserialize, Serialize};
-use std::net::SocketAddr;
 
 use super::mdns::{RGBLayout, Service, ServiceConfig};
 
@@ -53,7 +51,8 @@ impl Color {
 #[derive(Serialize)]
 pub struct Stage {
     rgb: Vec<Color>,
-    pub size: usize,
+    pub height: usize,
+    pub width: usize,
     pub service: Service,
 
     #[serde(skip)]
@@ -64,7 +63,8 @@ impl Clone for Stage {
     fn clone(&self) -> Self {
         Stage {
             rgb: self.rgb.clone(),
-            size: self.size,
+            width: self.width,
+            height: self.height,
             service: self.service.clone(),
             sacn: None,
         }
@@ -76,29 +76,26 @@ static PRIORITY: u8 = 10; // The priority for the sending data, must be 1-200 in
 impl Stage {
     pub fn new(service: &Service) -> Stage {
         let sacn = service.get_sacn_source();
-        let size = service.config.size as usize;
+        let width = service.config.width as usize;
+        let height = service.config.height as usize;
 
         Stage {
-            rgb: vec![Color(0, 0, 0); size],
-            size: size,
+            rgb: vec![Color(0, 0, 0); width * height],
+            width: width,
+            height: height,
             sacn,
             service: service.clone(),
         }
     }
-
-    pub fn set(&mut self, fixture: usize, color: Color) -> () {
-        self.rgb[fixture] = color;
+    pub fn set(&mut self, x: usize, y: usize, color: Color) {
+        self.rgb[y * self.width + x] = color;
     }
-
-    pub fn get(&self, fixture: usize) -> Color {
-        self.rgb[fixture]
+    pub fn get(&self, x: usize, y: usize) -> Color {
+        self.rgb[y * self.width + x]
     }
-
     pub fn clear(&mut self) {
-        self.rgb = vec![Color(0, 0, 0); self.size];
-        self.update();
+        self.rgb = vec![Color(0, 0, 0); self.width * self.height];
     }
-
     pub fn update(&mut self) {
         if let Some(ref mut sacn) = self.sacn {
             let mut data = vec![0];
@@ -109,7 +106,7 @@ impl Stage {
                     .flatten()
                     .collect::<Vec<u8>>(),
             );
-            let universes: &[u16] = &[1];
+            let universes: &[u16] = &[self.service.config.universe];
 
             match sacn.send(
                 universes,

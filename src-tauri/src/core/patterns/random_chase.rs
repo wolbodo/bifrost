@@ -1,3 +1,4 @@
+use crate::core::output::Output;
 use crate::core::patterns::Show;
 use crate::core::stage;
 use colors_transform::{Color, Rgb};
@@ -47,7 +48,7 @@ impl RandomChase {
 }
 
 impl Show for RandomChase {
-    fn tick(&mut self, progress: f32, stage: &mut stage::Stage) {
+    fn tick(&mut self, progress: f32, stage: &mut Output) {
         let mut rng = rand::thread_rng();
         if self.state.is_none() {
             self.state = Some(State::new());

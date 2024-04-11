@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
+use crate::core::output::Output;
 use crate::core::patterns::{Pattern, Show};
-use crate::core::stage::Stage;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Slot {
@@ -85,7 +85,7 @@ impl Sequence {
                 }
             })
     }
-    pub fn tick(&mut self, stage: &mut Stage) {
+    pub fn tick(&mut self, output: &mut Output) {
         if self.patterns.is_empty() {
             return;
         }
@@ -107,7 +107,7 @@ impl Sequence {
                         false => ((self.time as f32 * current.speed) / SLOT_SIZE as f32) % 1.0,
                     };
 
-                    pattern.tick(progress, stage);
+                    pattern.tick(progress, output);
                 }
             }
         }

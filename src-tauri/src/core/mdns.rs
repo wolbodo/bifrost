@@ -18,15 +18,15 @@ pub enum RGBLayout {
 
 #[derive(Serialize, Clone, Debug)]
 pub struct ServiceConfig {
-    pub size: u16,
+    pub height: u16,
     pub width: u16,
     pub universe: u16,
     layout: RGBLayout,
 }
 
 pub static SERVICE_CONFIG: phf::Map<&'static str, ServiceConfig> = phf::phf_map! {
-  "bifrost-demo._e131._udp.local" => ServiceConfig { size: 64, universe: 1, width:16, layout: RGBLayout::RGB },
-  "dmx-lights._e131._udp.local" => ServiceConfig { size: 12, universe: 1, width: 4, layout: RGBLayout::RGBPar },
+  "bifrost-demo._e131._udp.local" => ServiceConfig { height:4, universe: 10, width:6, layout: RGBLayout::RGB },
+  "dmx-lights._e131._udp.local" => ServiceConfig { height: 3, universe: 1, width: 4, layout: RGBLayout::RGBPar },
 };
 
 #[derive(Serialize, Clone, Debug)]

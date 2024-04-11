@@ -1,3 +1,4 @@
+use crate::core::output::Output;
 use crate::core::patterns::Show;
 use crate::core::stage::{self, Color};
 use serde::{Deserialize, Serialize};
@@ -20,13 +21,15 @@ impl Blink {
 }
 
 impl Show for Blink {
-    fn tick(&mut self, progress: f32, stage: &mut stage::Stage) {
+    fn tick(&mut self, progress: f32, output: &mut Output) {
         let color = match self.on >= progress {
             true => self.color,
             false => Color::BLACK,
         };
-        for i in 0..stage.size {
-            stage.set(i, color)
+        for x in 0..output.width {
+            for y in 0..output.width {
+                output.set(x, y, color)
+            }
         }
     }
 }

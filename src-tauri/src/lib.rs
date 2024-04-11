@@ -27,7 +27,7 @@ pub fn run() {
             delete_pattern,
             set_track,
             get_sequence,
-            set_service,
+            // set_service,
             clear,
         ])
         .setup(move |app| {
@@ -103,11 +103,11 @@ fn start_engine(
                                 }
                             }
 
-                            if let Ok(value) = serde_json::to_value(&engine.stage) {
-                                match window.emit("stage", value) {
+                            if let Ok(value) = serde_json::to_value(&engine.output) {
+                                match window.emit("output", value) {
                                     Ok(_) => {}
                                     Err(_) => {
-                                        println!("failed to emit stage");
+                                        println!("failed to emit output");
                                     }
                                 }
                             }
@@ -227,24 +227,24 @@ fn get_sequence(engine: tauri::State<Arc<Mutex<core::engine::Engine>>>) -> Value
     serde_json::to_value(&engine.sequence).unwrap()
 }
 
-#[tauri::command]
-fn set_service(
-    service: String,
-    engine: tauri::State<Arc<Mutex<core::engine::Engine>>>,
-    services: tauri::State<'_, Arc<Mutex<core::mdns::ServiceMap>>>,
-) {
-    let mut engine = engine.blocking_lock();
-    let services = services.blocking_lock();
+// #[tauri::command]
+// fn set_service(
+//     service: String,
+//     engine: tauri::State<Arc<Mutex<core::engine::Engine>>>,
+//     services: tauri::State<'_, Arc<Mutex<core::mdns::ServiceMap>>>,
+// ) {
+//     let mut engine = engine.blocking_lock();
+//     let services = services.blocking_lock();
 
-    if let Some(service) = services.get(&service) {
-        engine.set_stage(core::stage::Stage::new(service));
-    }
-}
+//     if let Some(service) = services.get(&service) {
+//         engine.set_stage(core::stage::Stage::new(service));
+//     }
+// }
 
 #[tauri::command]
 fn clear(engine: tauri::State<Arc<Mutex<core::engine::Engine>>>) {
     let mut engine = engine.blocking_lock();
-    engine.stage.clear();
+    engine.output.clear();
 }
 
 // #[tauri::command]
