@@ -1,3 +1,4 @@
+use crate::core::output::Output;
 use crate::core::patterns::Show;
 use crate::core::stage::{Color, Stage};
 use serde::{Deserialize, Serialize};
@@ -24,13 +25,10 @@ impl Wave {
 }
 
 impl Show for Wave {
-    fn tick(&mut self, progress: f32, stage: &mut Stage) {
-        let width = stage.service.config.width as usize;
-        let height = stage.size / width;
-
+    fn tick(&mut self, progress: f32, output: &mut Output) {
         let (along, across) = match self.direction {
-            true => (height, width),
-            false => (width, height),
+            true => (output.height, output.width),
+            false => (output.width, output.height),
         };
 
         for i in 0..along {
@@ -45,7 +43,7 @@ impl Show for Wave {
                     true => (j, i),
                     false => (i, j),
                 };
-                stage.set(x + y * width, color);
+                output.set(x, y, color);
             }
         }
     }

@@ -1,7 +1,5 @@
-use crate::core::mdns;
 use crate::core::output::Output;
 use crate::core::sequence::Sequence;
-use crate::core::stage::Stage;
 use serde::Serialize;
 
 #[derive(Serialize, Clone, PartialEq)]

@@ -1,3 +1,4 @@
+use crate::core::output::Output;
 use crate::core::patterns::Show;
 use crate::core::stage;
 use serde::{Deserialize, Serialize};
@@ -9,9 +10,11 @@ pub struct Solid {
 }
 
 impl Show for Solid {
-    fn tick(&mut self, progress: f32, stage: &mut stage::Stage) {
-        for i in 0..stage.size {
-            stage.set(i, self.color);
+    fn tick(&mut self, progress: f32, output: &mut Output) {
+        for x in 0..output.width {
+            for y in 0..output.width {
+                output.set(x, y, self.color)
+            }
         }
     }
 }

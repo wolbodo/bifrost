@@ -9,8 +9,9 @@ use rand::Rng;
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct State {
     hue: u16,
-    chase: Vec<usize>,
-    previous: Option<(usize, stage::Color)>,
+    step: usize,
+    chase: Vec<(usize, usize)>,
+    previous: Option<((usize, usize), stage::Color)>,
 }
 
 impl State {
@@ -19,6 +20,7 @@ impl State {
         State {
             hue: rng.gen_range(0..=20),
             chase: vec![],
+            step: 0,
             previous: None,
         }
     }
@@ -48,7 +50,7 @@ impl RandomChase {
 }
 
 impl Show for RandomChase {
-    fn tick(&mut self, progress: f32, stage: &mut Output) {
+    fn tick(&mut self, progress: f32, output: &mut Output) {
         let mut rng = rand::thread_rng();
         if self.state.is_none() {
             self.state = Some(State::new());
@@ -56,13 +58,16 @@ impl Show for RandomChase {
         let mut state = self.state.take().unwrap();
 
         if let Some((position, color)) = state.previous.take() {
-            stage.set(position, color);
+            output.set(position.0, position.1, color);
         }
 
         let size = state.chase.len();
         if self.steps > size {
             for _ in size..self.steps {
-                state.chase.push(rng.gen_range(0..stage.size));
+                state.chase.push((
+                    rng.gen_range(0..output.width),
+                    rng.gen_range(0..output.height),
+                ));
             }
         } else if self.steps <= size {
             state.chase.truncate(self.steps as usize);
@@ -70,11 +75,18 @@ impl Show for RandomChase {
 
         let step =
             (progress * self.steps as f32 * self.speed as f32) as usize % self.steps as usize;
-        if step % self.speed == 0 {
+
+        if step != state.step {
+            state.step = step;
             if rng.gen_bool(self.randomness.into()) {
-                state.chase[step as usize] = rng.gen_range(0..stage.size);
+                state.chase[step as usize] = (
+                    rng.gen_range(0..output.width),
+                    rng.gen_range(0..output.height),
+                );
             }
         }
+        // if step % self.speed == 0 {
+        // }
 
         let color: stage::Color = Rgb::from(
             self.color.0 as f32,
@@ -87,8 +99,9 @@ impl Show for RandomChase {
         .into();
 
         let fixture = state.chase[step];
-        state.previous = Some((fixture, stage.get(fixture)));
-        stage.set(state.chase[step], color);
+        state.previous = Some((fixture, output.get(fixture.0, fixture.1)));
+        let (x, y) = state.chase[step];
+        output.set(x, y, color);
 
         self.state = Some(state)
     }

@@ -1,10 +1,10 @@
+use crate::core::output::Output;
 use crate::core::patterns::Show;
-use crate::core::stage::{Color, Stage};
-use palette::RgbHue;
+use crate::core::stage::Color;
 use serde::{Deserialize, Serialize};
 
 use palette::convert::FromColorUnclamped;
-use palette::{rgb::Rgb, Hsl, IntoColor, Srgb};
+use palette::{Hsl, Srgb};
 use std::f64::consts::PI;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -29,13 +29,10 @@ impl RainbowWave {
 }
 
 impl Show for RainbowWave {
-    fn tick(&mut self, progress: f32, stage: &mut Stage) {
-        let width = stage.service.config.width as usize;
-        let height = stage.size / width;
-
+    fn tick(&mut self, progress: f32, output: &mut Output) {
         let (along, across) = match self.direction {
-            true => (height, width),
-            false => (width, height),
+            true => (output.height, output.width),
+            false => (output.width, output.height),
         };
 
         for i in 0..along {
@@ -52,7 +49,7 @@ impl Show for RainbowWave {
                     true => (j, i),
                     false => (i, j),
                 };
-                stage.set(x + y * width, color);
+                output.set(x, y, color);
             }
         }
     }
