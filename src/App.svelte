@@ -7,7 +7,7 @@
   import Pattern from "./lib/patterns/Pattern.svelte";
 </script>
 
-<main>
+<main class="main">
   <header>
     <span>Time: {$time}</span>
     <button on:click={() => invoke("start_engine")}>▶️</button>
@@ -26,12 +26,12 @@
 </main>
 
 <style>
-  main {
+  .main {
     display: grid;
     grid:
       "header header" 2.5rem
       "sequence sequence" min-content
-      "pattern stage" auto
+      "pattern output" auto
       "debug debug" auto / 1fr 1fr;
 
     max-height: 100vh;

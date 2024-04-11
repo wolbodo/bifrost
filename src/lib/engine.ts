@@ -15,26 +15,16 @@ export type Sequence = {
   time: number;
 };
 
-export type Stage = {
-  rgb: [number, number, number][];
-  size: number;
-  time: number;
-  service: {
-    config: {
-      layout: string;
-      size: number;
-      universe: number;
-      width: number;
-    };
-    name: string;
-    size: number;
-  };
+export type Output = {
+  buffer: [number, number, number][];
+  height: number;
+  width: number;
 };
 
 export type Engine = {
   sequence: Sequence;
   speed: number;
-  stage: Stage;
+  stage: Output;
 };
 
 export const engine = readable<Engine>(null, (set) => {
@@ -43,8 +33,8 @@ export const engine = readable<Engine>(null, (set) => {
     set(engine);
   });
 });
-export const stage = readable<Stage>(null, (set) => {
-  listen<Stage>("stage", (event) => {
+export const output = readable<Output>(null, (set) => {
+  listen<Output>("output", (event) => {
     set(event.payload);
   });
 });

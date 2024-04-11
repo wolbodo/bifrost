@@ -1,20 +1,24 @@
 <script lang="ts">
-  import { stage } from "../engine";
+  import { output } from "../engine";
   import { discovery } from "../mdns";
-  import { invoke } from "@tauri-apps/api/core";
+  // import { invoke } from "@tauri-apps/api/core";
 
-  let service;
+  // let service;
 
-  $: if ($discovery && !service) {
-    service = Object.keys($discovery)[0];
-  }
-  $: if (service) {
-    invoke("set_service", { service });
+  // $: if ($discovery && !service) {
+  //   service = Object.keys($discovery)[0];
+  // }
+  // $: if (service) {
+  //   invoke("set_service", { service });
+  // }
+
+  $: {
+    console.log("output", $output);
   }
 </script>
 
 <section>
-  <select disabled={!$discovery} bind:value={service}>
+  <!-- <select disabled={!$discovery} bind:value={service}>
     {#if $discovery}
       {#each Object.entries($discovery) as [name, service]}
         <option value={name}>{name}</option>
@@ -22,10 +26,10 @@
     {:else}
       <option value="">loading services</option>
     {/if}
-  </select>
+  </select> -->
 
-  <ul style:--width={$stage?.service.config.width}>
-    {#each $stage?.rgb || [] as rgb}
+  <ul style:--width={$output?.width}>
+    {#each $output?.buffer || [] as rgb}
       <li style="background: rgb({rgb})" />
     {/each}
   </ul>
@@ -33,7 +37,7 @@
 
 <style>
   section {
-    grid-area: stage;
+    grid-area: output;
   }
   ul {
     --size: 0.5rem;
