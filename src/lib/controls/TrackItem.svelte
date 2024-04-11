@@ -1,39 +1,37 @@
-
-<script lang='ts'>
+<script lang="ts">
   import { onMount } from "svelte";
 
-  export let width = 1
+  export let width = 1;
   export let observer: ResizeObserver;
-  export let mouseMove
-  export let startDrag
-  export let handleKeyDown
+  export let mouseMove;
+  export let startDrag;
+  export let handleKeyDown;
 
   let element: HTMLElement;
 
   onMount(() => {
     if (element && observer) {
-      console.log('observe', element)
-      observer.observe(element)
+      console.log("observe", element);
+      observer.observe(element);
     }
-  })
+  });
 </script>
-<section 
+
+<section
   bind:this={element}
   style:grid-column-start="span {width}"
   aria-label="drag-handle"
-  class="handle" 
-
+  class="handle"
   on:mousemove={mouseMove}
   on:mousedown={startDrag}
   on:touchstart={startDrag}
   on:keydown={handleKeyDown}
-  >
+>
   <slot />
 </section>
 
 <style>
-
-section {
+  section {
     grid-column-end: auto;
     box-sizing: border-box;
     background: var(--primary-2);
